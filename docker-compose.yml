@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  base:
+    image: goshopify
+    volumes:
+      - .:/go/src/github.com/receiptful/go-shopify
+
+  fmt:
+    extends: base
+    command: gofmt -w .
+  
+  test:
+    extends: base
+    command: go test -v ./...
