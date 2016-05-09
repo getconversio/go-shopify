@@ -16,7 +16,7 @@ var (
 func setup() {
 	app = App{
 		ApiKey:      "apikey",
-		ApiSecret:   "apisecret",
+		ApiSecret:   "hush",
 		RedirectUrl: "https://example.com/callback",
 		Scope:       "read_products",
 	}
