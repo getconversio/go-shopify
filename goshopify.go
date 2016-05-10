@@ -38,7 +38,7 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Products ProductsService
+	Product ProductService
 }
 
 // Creates an API request. A relative URL can be provided in urlStr, which will
@@ -85,7 +85,7 @@ func NewClient(app App, shopName string, token string) *Client {
 	baseURL, _ := url.Parse(ShopBaseUrl(shopName))
 
 	c := &Client{client: httpClient, app: app, baseURL: baseURL, token: token}
-	c.Products = &ProductsServiceOp{client: c}
+	c.Product = &ProductServiceOp{client: c}
 
 	return c
 }
