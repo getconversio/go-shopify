@@ -1,6 +1,11 @@
 package goshopify
 
-import "net/url"
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"net/url"
+)
 
 // Returns a Shopify oauth authorization url for the given shopname and state.
 //
@@ -39,4 +44,34 @@ func (app App) GetAccessToken(shopName string, code string) (string, error) {
 	token := new(Token)
 	err = client.Do(req, token)
 	return token.Token, err
+}
+
+// Verify a message against a message HMAC
+func (app App) VerifyMessage(message, messageMAC string) bool {
+	mac := hmac.New(sha256.New, []byte(app.ApiSecret))
+	mac.Write([]byte(message))
+	expectedMAC := mac.Sum(nil)
+
+	// shopify HMAC is in hex so it needs to be decoded
+	actualMac, _ := hex.DecodeString(messageMAC)
+
+	return hmac.Equal(actualMac, expectedMAC)
+}
+
+// Verify callback authorization for the given shop.
+func (app App) VerifyAuthorization(shop, code, timestamp, messageMAC string) bool {
+	// url values automatically sorts the query string parameters.
+	v := url.Values{}
+	v.Set("shop", shop)
+	v.Set("code", code)
+	v.Set("timestamp", timestamp)
+	message := v.Encode()
+
+	return app.VerifyMessage(message, messageMAC)
+}
+
+// Convenience function for verifying a URL directly from a handler.
+func (app App) VerifyAuthorizationURL(u *url.URL) bool {
+	q := u.Query()
+	return app.VerifyAuthorization(q.Get("shop"), q.Get("code"), q.Get("timestamp"), q.Get("hmac"))
 }
