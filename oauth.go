@@ -58,20 +58,16 @@ func (app App) VerifyMessage(message, messageMAC string) bool {
 	return hmac.Equal(actualMac, expectedMAC)
 }
 
-// Verify callback authorization for the given shop.
-func (app App) VerifyAuthorization(shop, code, timestamp, messageMAC string) bool {
-	// url values automatically sorts the query string parameters.
-	v := url.Values{}
-	v.Set("shop", shop)
-	v.Set("code", code)
-	v.Set("timestamp", timestamp)
-	message := v.Encode()
-
-	return app.VerifyMessage(message, messageMAC)
-}
-
-// Convenience function for verifying a URL directly from a handler.
+// Verifying URL callback parameters.
 func (app App) VerifyAuthorizationURL(u *url.URL) bool {
 	q := u.Query()
-	return app.VerifyAuthorization(q.Get("shop"), q.Get("code"), q.Get("timestamp"), q.Get("hmac"))
+	messageMAC := q.Get("hmac")
+
+	// Remove hmac and signature and leave the rest of the parameters alone.
+	q.Del("hmac")
+	q.Del("signature")
+
+	message := q.Encode()
+
+	return app.VerifyMessage(message, messageMAC)
 }
