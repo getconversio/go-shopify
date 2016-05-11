@@ -36,7 +36,7 @@ type productsRoot struct {
 	Products []Product `json:"products"`
 }
 
-type countRoot struct {
+type productCountRoot struct {
 	Count int `json:"count"`
 }
 
@@ -66,7 +66,7 @@ func (s *ProductServiceOp) Count() (int, error) {
 		return 0, err
 	}
 
-	root := new(countRoot)
+	root := new(productCountRoot)
 	err = s.client.Do(req, root)
 	if err != nil {
 		return 0, err
