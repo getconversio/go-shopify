@@ -41,9 +41,9 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Product ProductService
+	Product  ProductService
 	Customer CustomerService
-	Order OrderService
+	Order    OrderService
 }
 
 // A general response error that follows a similar layout to Shopify's response
