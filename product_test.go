@@ -3,6 +3,7 @@ package goshopify
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 )
@@ -14,7 +15,7 @@ func TestProductList(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products.json",
 		httpmock.NewStringResponder(200, `{"products": [{"id":1},{"id":2}]}`))
 
-	products, err := client.Product.List()
+	products, err := client.Product.List(nil)
 	if err != nil {
 		t.Errorf("Product.List returned error: %v", err)
 	}
@@ -32,12 +33,26 @@ func TestProductCount(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/count.json",
 		httpmock.NewStringResponder(200, `{"count": 3}`))
 
-	cnt, err := client.Product.Count()
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
+		httpmock.NewStringResponder(200, `{"count": 2}`))
+
+	cnt, err := client.Product.Count(nil)
 	if err != nil {
 		t.Errorf("Product.Count returned error: %v", err)
 	}
 
 	expected := 3
+	if cnt != expected {
+		t.Errorf("Product.Count returned %d, expected %d", cnt, expected)
+	}
+
+	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	cnt, err = client.Product.Count(CountOptions{CreatedAtMin: date})
+	if err != nil {
+		t.Errorf("Product.Count returned error: %v", err)
+	}
+
+	expected = 2
 	if cnt != expected {
 		t.Errorf("Product.Count returned %d, expected %d", cnt, expected)
 	}

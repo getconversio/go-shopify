@@ -9,6 +9,9 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -41,9 +44,9 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Product ProductService
+	Product  ProductService
 	Customer CustomerService
-	Order OrderService
+	Order    OrderService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -72,8 +75,8 @@ func (e ResponseError) Error() string {
 // Creates an API request. A relative URL can be provided in urlStr, which will
 // be resolved to the BaseURL of the Client. Relative URLS should always be
 // specified without a preceding slash. If specified, the value pointed to by
-// body is JSON encoded and included in as the request body.
-func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+// body is JSON encoded and included as the request body.
+func (c *Client) NewRequest(method, urlStr string, body interface{}, options interface{}) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -81,6 +84,20 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 
 	// Make the full url based on the relative path
 	u := c.baseURL.ResolveReference(rel)
+
+	// Add custom options
+	if options != nil {
+		optionsQuery, err := query.Values(options)
+		if err != nil {
+			return nil, err
+		}
+
+		q := u.Query()
+		for k := range q {
+			optionsQuery.Add(k, q.Get(k))
+		}
+		u.RawQuery = optionsQuery.Encode()
+	}
 
 	// A bit of JSON ceremony
 	var js []byte = nil
@@ -121,8 +138,8 @@ func NewClient(app App, shopName string, token string) *Client {
 }
 
 // Do sends an API request and populates the given interface with the parsed
-// response. It does not make sense to call Do without a prepared interface
-// instance.
+// response. It does not make much sense to call Do without a prepared
+// interface instance.
 func (c *Client) Do(req *http.Request, v interface{}) error {
 	resp, err := c.client.Do(req)
 	defer resp.Body.Close()
@@ -199,4 +216,43 @@ func CheckResponseError(r *http.Response) error {
 	}
 
 	return responseError
+}
+
+// General list options that can be used for most collections of entities.
+type ListOptions struct {
+	Page         int       `url:"page,omitempty"`
+	Limit        int       `url:"limit,omitempty"`
+	SinceID      int       `url:"since_id,omitempty"`
+	CreatedAtMin time.Time `url:"created_at_min,omitempty"`
+	CreatedAtMax time.Time `url:"created_at_max,omitempty"`
+}
+
+// General count options that can be used for most collection counts.
+type CountOptions struct {
+	CreatedAtMin time.Time `url:"created_at_min,omitempty"`
+	CreatedAtMax time.Time `url:"created_at_max,omitempty"`
+}
+
+func (c *Client) Count(path string, options interface{}) (int, error) {
+	resource := struct {
+		Count int `json:"count"`
+	}{}
+	err := c.Get(path, &resource, options)
+	return resource.Count, err
+}
+
+// Perform a Get request for the given path and save the result in the given
+// resource.
+func (c *Client) Get(path string, resource interface{}, options interface{}) error {
+	req, err := c.NewRequest("GET", path, nil, options)
+	if err != nil {
+		return err
+	}
+
+	err = c.Do(req, resource)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -2,6 +2,8 @@ package goshopify
 
 import (
 	"fmt"
+
+	"github.com/shopspring/decimal"
 )
 
 const ordersBasePath = "admin/orders"
@@ -10,7 +12,8 @@ const ordersBasePath = "admin/orders"
 // the Shopify API.
 // See: https://help.shopify.com/api/reference/order
 type OrderService interface {
-	Count() (int, error)
+	List(options interface{}) ([]Order, error)
+	Count(options interface{}) (int, error)
 }
 
 // OrderServiceOp handles communication with the order related methods of the
@@ -19,24 +22,33 @@ type OrderServiceOp struct {
 	client *Client
 }
 
-type orderCountRoot struct {
-	Count int `json:"count"`
+// Order represents a Shopify order
+type Order struct {
+	ID    int             `json:"id"`
+	Name  string          `json:"name"`
+	Total decimal.Decimal `json:"total_price"`
+}
+
+// Represents the result from the orders/X.json endpoint
+type OrderResource struct {
+	Order *Order `json:"order"`
+}
+
+// Represents the result from the orders.json endpoint
+type OrdersResource struct {
+	Orders []Order `json:"orders"`
+}
+
+// List orders
+func (s *OrderServiceOp) List(options interface{}) ([]Order, error) {
+	path := fmt.Sprintf("%s.json", ordersBasePath)
+	resource := new(OrdersResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Orders, err
 }
 
 // Count orders
-func (s *OrderServiceOp) Count() (int, error) {
+func (s *OrderServiceOp) Count(options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", ordersBasePath)
-
-	req, err := s.client.NewRequest("GET", path, nil)
-	if err != nil {
-		return 0, err
-	}
-
-	root := new(orderCountRoot)
-	err = s.client.Do(req, root)
-	if err != nil {
-		return 0, err
-	}
-
-	return root.Count, err
+	return s.client.Count(path, options)
 }
