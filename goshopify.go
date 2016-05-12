@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -92,9 +93,10 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, options int
 			return nil, err
 		}
 
-		q := u.Query()
-		for k := range q {
-			optionsQuery.Add(k, q.Get(k))
+		for k, values := range u.Query() {
+			for _, v := range values {
+				optionsQuery.Add(k, v)
+			}
 		}
 		u.RawQuery = optionsQuery.Encode()
 	}
@@ -172,9 +174,10 @@ func CheckResponseError(r *http.Response) error {
 		return nil
 	}
 
+	// Create an anonoymous struct to parse the JSON data into.
 	shopifyError := struct {
-		Error  string              `json:"error"`
-		Errors map[string][]string `json:"errors"`
+		Error  string      `json:"error"`
+		Errors interface{} `json:"errors"`
 	}{}
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -186,9 +189,15 @@ func CheckResponseError(r *http.Response) error {
 		return err
 	}
 
+	// Create the response error from the Shopify error.
 	responseError := ResponseError{
 		Status:  r.StatusCode,
 		Message: shopifyError.Error,
+	}
+
+	// If the errors field is not filled out, we can return here.
+	if shopifyError.Errors == nil {
+		return responseError
 	}
 
 	// Shopify errors usually have the form:
@@ -201,16 +210,36 @@ func CheckResponseError(r *http.Response) error {
 	// }
 	// This structure is flattened to a single array:
 	// [ "title: something is wrong" ]
-	if len(shopifyError.Errors) > 0 {
-		for k := range shopifyError.Errors {
-			for _, elem := range shopifyError.Errors[k] {
-				// If the primary message of the response error is not set, use
-				// any message.
-				if responseError.Message == "" {
-					responseError.Message = elem
+	//
+	// Unfortunately, "errors" can also be a single string so we have to deal
+	// with that. Lots of reflection :-(
+	kind := reflect.TypeOf(shopifyError.Errors).Kind()
+	if kind == reflect.String {
+		// Single string, use as message
+		responseError.Message = shopifyError.Errors.(string)
+	} else if kind == reflect.Slice {
+		// An array, parse each entry as a string and join them on the message
+		// json always serializes JSON arrays into []interface{}
+		for _, elem := range shopifyError.Errors.([]interface{}) {
+			responseError.Errors = append(responseError.Errors, fmt.Sprint(elem))
+		}
+		responseError.Message = strings.Join(responseError.Errors, ", ")
+	} else if kind == reflect.Map {
+		// A map, parse each error for each key in the map.
+		// json always serializes into map[string]interface{} for objects
+		for k, v := range shopifyError.Errors.(map[string]interface{}) {
+			// Check to make sure the interface is a slice
+			// json always serializes JSON arrays into []interface{}
+			if reflect.TypeOf(v).Kind() == reflect.Slice {
+				for _, elem := range v.([]interface{}) {
+					// If the primary message of the response error is not set, use
+					// any message.
+					if responseError.Message == "" {
+						responseError.Message = fmt.Sprint(elem)
+					}
+					topicAndElem := fmt.Sprintf("%v: %v", k, elem)
+					responseError.Errors = append(responseError.Errors, topicAndElem)
 				}
-				topicAndElem := fmt.Sprintf("%v: %v", k, elem)
-				responseError.Errors = append(responseError.Errors, topicAndElem)
 			}
 		}
 	}
