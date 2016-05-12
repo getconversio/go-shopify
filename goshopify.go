@@ -3,9 +3,12 @@ package goshopify
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"sort"
+	"strings"
 )
 
 const (
@@ -41,6 +44,29 @@ type Client struct {
 	Product ProductService
 	Customer CustomerService
 	Order OrderService
+}
+
+// A general response error that follows a similar layout to Shopify's response
+// errors, i.e. either a single message or a list of messages.
+type ResponseError struct {
+	Status  int
+	Message string
+	Errors  []string
+}
+
+func (e ResponseError) Error() string {
+	if e.Message != "" {
+		return e.Message
+	}
+
+	sort.Strings(e.Errors)
+	s := strings.Join(e.Errors, ", ")
+
+	if s != "" {
+		return s
+	}
+
+	return "Unknown Error"
 }
 
 // Creates an API request. A relative URL can be provided in urlStr, which will
@@ -105,17 +131,10 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 		return err
 	}
 
-	// TODO: Error handling
-	//if c := resp.StatusCode; c >= 400 {
-	//	return nil,
-	//}
-
-	//response := newResponse(resp)
-
-	//err = CheckResponse(resp)
-	//if err != nil {
-	//	return response, err
-	//}
+	err = CheckResponseError(resp)
+	if err != nil {
+		return err
+	}
 
 	if v != nil {
 		body, err := ioutil.ReadAll(resp.Body)
@@ -129,4 +148,55 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	}
 
 	return nil
+}
+
+func CheckResponseError(r *http.Response) error {
+	if r.StatusCode >= 200 && r.StatusCode < 300 {
+		return nil
+	}
+
+	shopifyError := struct {
+		Error  string              `json:"error"`
+		Errors map[string][]string `json:"errors"`
+	}{}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, &shopifyError)
+	if err != nil {
+		return err
+	}
+
+	responseError := ResponseError{
+		Status:  r.StatusCode,
+		Message: shopifyError.Error,
+	}
+
+	// Shopify errors usually have the form:
+	// {
+	//   "errors": {
+	//     "title": [
+	//       "something is wrong"
+	//     ]
+	//   }
+	// }
+	// This structure is flattened to a single array:
+	// [ "title: something is wrong" ]
+	if len(shopifyError.Errors) > 0 {
+		for k := range shopifyError.Errors {
+			for _, elem := range shopifyError.Errors[k] {
+				// If the primary message of the response error is not set, use
+				// any message.
+				if responseError.Message == "" {
+					responseError.Message = elem
+				}
+				topicAndElem := fmt.Sprintf("%v: %v", k, elem)
+				responseError.Errors = append(responseError.Errors, topicAndElem)
+			}
+		}
+	}
+
+	return responseError
 }
