@@ -10,8 +10,8 @@ const productsBasePath = "admin/products"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
 type ProductService interface {
-	List() ([]Product, error)
-	Count() (int, error)
+	List(options interface{}) ([]Product, error)
+	Count(options interface{}) (int, error)
 	Get(int) (*Product, error)
 }
 
@@ -27,68 +27,34 @@ type Product struct {
 	Title string `json:"title"`
 }
 
-// productRoot represents a product root
-type productRoot struct {
+// Represents the result from the products/X.json endpoint
+type ProductResource struct {
 	Product *Product `json:"product"`
 }
 
-type productsRoot struct {
+// Represents the result from the products.json endpoint
+type ProductsResource struct {
 	Products []Product `json:"products"`
 }
 
-type productCountRoot struct {
-	Count int `json:"count"`
-}
-
-// Performs a list request given a path
-func (s *ProductServiceOp) List() ([]Product, error) {
+// List products
+func (s *ProductServiceOp) List(options interface{}) ([]Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
-	req, err := s.client.NewRequest("GET", path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	root := new(productsRoot)
-	err = s.client.Do(req, root)
-	if err != nil {
-		return nil, err
-	}
-
-	return root.Products, err
+	resource := new(ProductsResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Products, err
 }
 
 // Count products
-func (s *ProductServiceOp) Count() (int, error) {
+func (s *ProductServiceOp) Count(options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", productsBasePath)
-
-	req, err := s.client.NewRequest("GET", path, nil)
-	if err != nil {
-		return 0, err
-	}
-
-	root := new(productCountRoot)
-	err = s.client.Do(req, root)
-	if err != nil {
-		return 0, err
-	}
-
-	return root.Count, err
+	return s.client.Count(path, options)
 }
 
 // Get individual product
 func (s *ProductServiceOp) Get(productID int) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, productID)
-
-	req, err := s.client.NewRequest("GET", path, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	root := new(productRoot)
-	err = s.client.Do(req, root)
-	if err != nil {
-		return nil, err
-	}
-
-	return root.Product, err
+	resource := new(ProductResource)
+	err := s.client.Get(path, resource, nil)
+	return resource.Product, err
 }

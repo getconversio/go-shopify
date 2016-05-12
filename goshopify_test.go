@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 )
@@ -41,12 +42,17 @@ func TestNewClient(t *testing.T) {
 func TestNewRequest(t *testing.T) {
 	c := NewClient(app, "fooshop", "abcd")
 
-	inURL, outURL := "/foo", "https://fooshop.myshopify.com/foo"
+	inURL, outURL := "foo?page=1", "https://fooshop.myshopify.com/foo?limit=10&page=1"
 	inBody := struct {
 		Hello string `json:"hello"`
 	}{Hello: "World"}
 	outBody := `{"hello":"World"}`
-	req, _ := c.NewRequest("GET", inURL, inBody)
+
+	type extraOptions struct {
+		Limit int `url:"limit"`
+	}
+
+	req, _ := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
 
 	// Test relative URL was expanded
 	if req.URL.String() != outURL {
@@ -76,7 +82,7 @@ func TestNewRequest(t *testing.T) {
 func TestNewRequestMissingToken(t *testing.T) {
 	c := NewClient(app, "fooshop", "")
 
-	req, _ := c.NewRequest("GET", "/foo", nil)
+	req, _ := c.NewRequest("GET", "/foo", nil, nil)
 
 	// Test token is not attached to the request
 	token := req.Header["X-Shopify-Access-Token"]
@@ -120,7 +126,7 @@ func TestDo(t *testing.T) {
 		httpmock.RegisterResponder("GET", shopUrl, c.responder)
 
 		body := new(MyStruct)
-		req, _ := client.NewRequest("GET", c.url, nil)
+		req, _ := client.NewRequest("GET", c.url, nil, nil)
 		err := client.Do(req, body)
 
 		if err != nil && !reflect.DeepEqual(err, c.expected) {
@@ -198,5 +204,39 @@ func TestCheckResponseError(t *testing.T) {
 		if !reflect.DeepEqual(actual, c.expected) {
 			t.Errorf("CheckResponseError(): expected %#v, actual %#v", c.expected, actual)
 		}
+	}
+}
+
+func TestCount(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/foocount",
+		httpmock.NewStringResponder(200, `{"count": 5}`))
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/foocount?created_at_min=2016-01-01T00%3A00%3A00Z",
+		httpmock.NewStringResponder(200, `{"count": 2}`))
+
+	// Test without options
+	cnt, err := client.Count("foocount", nil)
+	if err != nil {
+		t.Errorf("Client.Count returned error: %v", err)
+	}
+
+	expected := 5
+	if cnt != expected {
+		t.Errorf("Client.Count returned %d, expected %d", cnt, expected)
+	}
+
+	// Test with options
+	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	cnt, err = client.Count("foocount", CountOptions{CreatedAtMin: date})
+	if err != nil {
+		t.Errorf("Client.Count returned error: %v", err)
+	}
+
+	expected = 2
+	if cnt != expected {
+		t.Errorf("Client.Count returned %d, expected %d", cnt, expected)
 	}
 }
