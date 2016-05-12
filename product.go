@@ -6,18 +6,18 @@ import (
 
 const productsBasePath = "admin/products"
 
-// ProductsService is an interface for interfacing with the product endpoints
+// ProductService is an interface for interfacing with the product endpoints
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
-type ProductsService interface {
+type ProductService interface {
 	List() ([]Product, error)
 	Count() (int, error)
 	Get(int) (*Product, error)
 }
 
-// ProductsServiceOp handles communication with the product related methods of
+// ProductServiceOp handles communication with the product related methods of
 // the Shopify API.
-type ProductsServiceOp struct {
+type ProductServiceOp struct {
 	client *Client
 }
 
@@ -36,12 +36,12 @@ type productsRoot struct {
 	Products []Product `json:"products"`
 }
 
-type countRoot struct {
+type productCountRoot struct {
 	Count int `json:"count"`
 }
 
 // Performs a list request given a path
-func (s *ProductsServiceOp) List() ([]Product, error) {
+func (s *ProductServiceOp) List() ([]Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
 	req, err := s.client.NewRequest("GET", path, nil)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *ProductsServiceOp) List() ([]Product, error) {
 }
 
 // Count products
-func (s *ProductsServiceOp) Count() (int, error) {
+func (s *ProductServiceOp) Count() (int, error) {
 	path := fmt.Sprintf("%s/count.json", productsBasePath)
 
 	req, err := s.client.NewRequest("GET", path, nil)
@@ -66,7 +66,7 @@ func (s *ProductsServiceOp) Count() (int, error) {
 		return 0, err
 	}
 
-	root := new(countRoot)
+	root := new(productCountRoot)
 	err = s.client.Do(req, root)
 	if err != nil {
 		return 0, err
@@ -76,7 +76,7 @@ func (s *ProductsServiceOp) Count() (int, error) {
 }
 
 // Get individual product
-func (s *ProductsServiceOp) Get(productID int) (*Product, error) {
+func (s *ProductServiceOp) Get(productID int) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, productID)
 
 	req, err := s.client.NewRequest("GET", path, nil)
