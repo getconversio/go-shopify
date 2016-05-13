@@ -144,11 +144,10 @@ func NewClient(app App, shopName string, token string) *Client {
 // interface instance.
 func (c *Client) Do(req *http.Request, v interface{}) error {
 	resp, err := c.client.Do(req)
-	defer resp.Body.Close()
-
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	err = CheckResponseError(resp)
 	if err != nil {
