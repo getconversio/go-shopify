@@ -142,3 +142,11 @@ func FetchWebhooks() ([]Webhook, error) {
     return resource.Webhooks, err
 }
 ```
+
+## Develop and test
+
+There's nothing special to note about the tests except that if you have Docker
+and Compose installed, you can test like this:
+
+    $ docker build -t goshopify .
+    $ docker-compose run test
