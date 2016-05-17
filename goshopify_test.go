@@ -31,6 +31,14 @@ func teardown() {
 	httpmock.DeactivateAndReset()
 }
 
+func loadFixture(filename string) []byte {
+	f, err := ioutil.ReadFile("fixtures/" + filename)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot load fixture %v", filename))
+	}
+	return f
+}
+
 func TestNewClient(t *testing.T) {
 	c := NewClient(app, "fooshop", "abcd")
 	expected := "https://fooshop.myshopify.com"

@@ -65,7 +65,7 @@ func TestProductGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1.json",
 		httpmock.NewStringResponder(200, `{"product": {"id":1}}`))
 
-	product, err := client.Product.Get(1)
+	product, err := client.Product.Get(1, nil)
 	if err != nil {
 		t.Errorf("Product.Get returned error: %v", err)
 	}
