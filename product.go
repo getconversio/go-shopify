@@ -10,9 +10,9 @@ const productsBasePath = "admin/products"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
 type ProductService interface {
-	List(options interface{}) ([]Product, error)
-	Count(options interface{}) (int, error)
-	Get(int) (*Product, error)
+	List(interface{}) ([]Product, error)
+	Count(interface{}) (int, error)
+	Get(int, interface{}) (*Product, error)
 }
 
 // ProductServiceOp handles communication with the product related methods of
@@ -52,9 +52,9 @@ func (s *ProductServiceOp) Count(options interface{}) (int, error) {
 }
 
 // Get individual product
-func (s *ProductServiceOp) Get(productID int) (*Product, error) {
+func (s *ProductServiceOp) Get(productID int, options interface{}) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, productID)
 	resource := new(ProductResource)
-	err := s.client.Get(path, resource, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Product, err
 }

@@ -10,8 +10,9 @@ const customersBasePath = "admin/customers"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/customer
 type CustomerService interface {
-	List(options interface{}) ([]Customer, error)
-	Count(options interface{}) (int, error)
+	List(interface{}) ([]Customer, error)
+	Count(interface{}) (int, error)
+	Get(int, interface{}) (*Customer, error)
 }
 
 // CustomerServiceOp handles communication with the product related methods of
@@ -50,4 +51,12 @@ func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
 func (s *CustomerServiceOp) Count(options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", customersBasePath)
 	return s.client.Count(path, options)
+}
+
+// Get customer
+func (s *CustomerServiceOp) Get(customerID int, options interface{}) (*Customer, error) {
+	path := fmt.Sprintf("%s/%v.json", customersBasePath, customerID)
+	resource := new(CustomerResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Customer, err
 }

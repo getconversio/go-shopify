@@ -57,3 +57,21 @@ func TestCustomerCount(t *testing.T) {
 		t.Errorf("Customer.Count returned %d, expected %d", cnt, expected)
 	}
 }
+
+func TestCustomerGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/customers/1.json",
+		httpmock.NewStringResponder(200, `{"customer": {"id":1}}`))
+
+	customer, err := client.Customer.Get(1, nil)
+	if err != nil {
+		t.Errorf("Customer.Get returned error: %v", err)
+	}
+
+	expected := &Customer{ID: 1}
+	if !reflect.DeepEqual(customer, expected) {
+		t.Errorf("Customer.Get returned %+v, expected %+v", customer, expected)
+	}
+}
