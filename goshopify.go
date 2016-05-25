@@ -48,6 +48,7 @@ type Client struct {
 	Product  ProductService
 	Customer CustomerService
 	Order    OrderService
+	Shop     ShopService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -135,6 +136,7 @@ func NewClient(app App, shopName string, token string) *Client {
 	c.Product = &ProductServiceOp{client: c}
 	c.Customer = &CustomerServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
+	c.Shop = &ShopServiceOp{client: c}
 
 	return c
 }
