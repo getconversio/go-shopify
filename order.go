@@ -51,6 +51,7 @@ type Order struct {
 	UpdatedAt             *time.Time       `json:"updated_at"`
 	ClosedAt              *time.Time       `json:"closed_at"`
 	ProcessedAt           *time.Time       `json:"processed_at"`
+	Customer              *Customer        `json:"customer"`
 	BillingAddress        *Address         `json:"billing_address"`
 	ShippingAddress       *Address         `json:"shipping_address"`
 	Currency              string           `json:"currency"`

@@ -30,6 +30,14 @@ func orderTests(t *testing.T, order Order) {
 	if order.TotalTax != nil {
 		t.Errorf("Order.TotalTax returned %+v, expected %+v", order.TotalTax, nil)
 	}
+
+	// Check customer
+	if order.Customer == nil {
+		t.Error("Expected Customer to not be nil")
+	}
+	if order.Customer.Email != "john@test.com" {
+		t.Errorf("Customer.Email, expected %v, actual %v", "john@test.com", order.Customer.Email)
+	}
 }
 
 func TestOrderList(t *testing.T) {
