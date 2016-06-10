@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -159,11 +158,8 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	}
 
 	if v != nil {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(body, &v)
+		decoder := json.NewDecoder(resp.Body)
+		err := decoder.Decode(&v)
 		if err != nil {
 			return err
 		}
@@ -183,11 +179,8 @@ func CheckResponseError(r *http.Response) error {
 		Errors interface{} `json:"errors"`
 	}{}
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(body, &shopifyError)
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&shopifyError)
 	if err != nil {
 		return err
 	}
