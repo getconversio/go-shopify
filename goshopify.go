@@ -273,10 +273,8 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 	return resource.Count, err
 }
 
-// Perform a Get request for the given path and save the result in the given
-// resource.
-func (c *Client) Get(path string, resource, options interface{}) error {
-	req, err := c.NewRequest("GET", path, nil, options)
+func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}) error {
+	req, err := c.NewRequest(method, path, data, options)
 	if err != nil {
 		return err
 	}
@@ -287,36 +285,22 @@ func (c *Client) Get(path string, resource, options interface{}) error {
 	}
 
 	return nil
+}
+
+// Perform a Get request for the given path and save the result in the given
+// resource.
+func (c *Client) Get(path string, resource, options interface{}) error {
+	return c.CreateAndDo("GET", path, nil, options, resource)
 }
 
 // Perform a POST request for the given path and save the result in the given
 // resource.
 func (c *Client) Post(path string, data, resource interface{}) error {
-	req, err := c.NewRequest("POST", path, data, nil)
-	if err != nil {
-		return err
-	}
-
-	err = c.Do(req, resource)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return c.CreateAndDo("POST", path, data, nil, resource)
 }
 
 // Perform a PUT request for the given path and save the result in the given
 // resource.
 func (c *Client) Put(path string, data, resource interface{}) error {
-	req, err := c.NewRequest("PUT", path, data, nil)
-	if err != nil {
-		return err
-	}
-
-	err = c.Do(req, resource)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return c.CreateAndDo("PUT", path, data, nil, resource)
 }
