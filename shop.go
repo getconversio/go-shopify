@@ -2,20 +2,20 @@ package goshopify
 
 import "time"
 
-// CustomerService is an interface for interfacing with the customers endpoints
-// of the Shopify API.
+// ShopService is an interface for interfacing with the shop endpoint of the
+// Shopify API.
 // See: https://help.shopify.com/api/reference/shop
 type ShopService interface {
 	Get(options interface{}) (*Shop, error)
 }
 
-// CustomerServiceOp handles communication with the product related methods of
-// the Shopify API.
+// ShopServiceOp handles communication with the shop related methods of the
+// Shopify API.
 type ShopServiceOp struct {
 	client *Client
 }
 
-// Customer represents a Shopify customer
+// Shop represents a Shopify shop
 type Shop struct {
 	ID                      int        `json:"id"`
 	Name                    string     `json:"name"`
@@ -53,12 +53,12 @@ type Shop struct {
 	CountyTaxes             bool       `json:"county_taxes"`
 }
 
-// Represents the result from the customers/X.json endpoint
+// Represents the result from the admin/shop.json endpoint
 type ShopResource struct {
 	Shop *Shop `json:"shop"`
 }
 
-// Get customer
+// Get shop
 func (s *ShopServiceOp) Get(options interface{}) (*Shop, error) {
 	resource := new(ShopResource)
 	err := s.client.Get("admin/shop.json", resource, options)

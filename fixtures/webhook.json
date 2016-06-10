@@ -1,0 +1,16 @@
+{
+  "webhook": {
+    "id": 4759306,
+    "address": "http:\/\/apple.com",
+    "topic": "orders\/create",
+    "created_at": "2016-06-01T14:10:44-00:00",
+    "updated_at": "2016-06-01T14:10:44-00:00",
+    "format": "json",
+    "fields": [
+      "id", "updated_at"
+    ],
+    "metafield_namespaces": [
+      "google", "inventory"
+    ]
+  }
+}
