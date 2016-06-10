@@ -49,6 +49,7 @@ type Client struct {
 	Customer CustomerService
 	Order    OrderService
 	Shop     ShopService
+	Webhook  WebhookService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -78,7 +79,7 @@ func (e ResponseError) Error() string {
 // be resolved to the BaseURL of the Client. Relative URLS should always be
 // specified without a preceding slash. If specified, the value pointed to by
 // body is JSON encoded and included as the request body.
-func (c *Client) NewRequest(method, urlStr string, body interface{}, options interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -127,7 +128,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}, options int
 
 // Returns a new Shopify API client with an already authenticated shopname and
 // token.
-func NewClient(app App, shopName string, token string) *Client {
+func NewClient(app App, shopName, token string) *Client {
 	httpClient := http.DefaultClient
 
 	baseURL, _ := url.Parse(ShopBaseUrl(shopName))
@@ -137,6 +138,7 @@ func NewClient(app App, shopName string, token string) *Client {
 	c.Customer = &CustomerServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
 	c.Shop = &ShopServiceOp{client: c}
+	c.Webhook = &WebhookServiceOp{client: c}
 
 	return c
 }
@@ -271,10 +273,8 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 	return resource.Count, err
 }
 
-// Perform a Get request for the given path and save the result in the given
-// resource.
-func (c *Client) Get(path string, resource interface{}, options interface{}) error {
-	req, err := c.NewRequest("GET", path, nil, options)
+func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}) error {
+	req, err := c.NewRequest(method, path, data, options)
 	if err != nil {
 		return err
 	}
@@ -285,4 +285,22 @@ func (c *Client) Get(path string, resource interface{}, options interface{}) err
 	}
 
 	return nil
+}
+
+// Perform a Get request for the given path and save the result in the given
+// resource.
+func (c *Client) Get(path string, resource, options interface{}) error {
+	return c.CreateAndDo("GET", path, nil, options, resource)
+}
+
+// Perform a POST request for the given path and save the result in the given
+// resource.
+func (c *Client) Post(path string, data, resource interface{}) error {
+	return c.CreateAndDo("POST", path, data, nil, resource)
+}
+
+// Perform a PUT request for the given path and save the result in the given
+// resource.
+func (c *Client) Put(path string, data, resource interface{}) error {
+	return c.CreateAndDo("PUT", path, data, nil, resource)
 }
