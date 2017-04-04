@@ -4,7 +4,7 @@ Another Shopify Api Library in Go.
 
 **Warning**: This library is not ready for primetime :-)
 
-[![Build Status](https://travis-ci.org/Receiptful/go-shopify.svg?branch=master)](https://travis-ci.org/Receiptful/go-shopify)
+[![Build Status](https://travis-ci.org/getconversio/go-shopify.svg?branch=master)](https://travis-ci.org/getconversio/go-shopify)
 
 ## Install
 
