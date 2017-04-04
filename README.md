@@ -10,13 +10,13 @@ Another Shopify Api Library in Go.
 ## Install
 
 ```console
-$ go get github.com/receiptful/go-shopify
+$ go get github.com/getconversio/go-shopify
 ```
 
 ## Use
 
 ```go
-import "github.com/receiptful/go-shopify"
+import "github.com/getconversio/go-shopify"
 ```
 
 This gives you access to the `goshopify` package.
@@ -149,5 +149,10 @@ func FetchWebhooks() ([]Webhook, error) {
 There's nothing special to note about the tests except that if you have Docker
 and Compose installed, you can test like this:
 
-    $ docker build -t goshopify .
-    $ docker-compose run test
+    $ docker-compose build dev
+    $ docker-compose run --rm dev
+
+Testing the package is the default command for the dev container. To create a
+coverage profile:
+
+    $ docker-compose run --rm dev bash -c 'go test -coverprofile=coverage.out ./... && go tool cover -html coverage.out -o coverage.html'

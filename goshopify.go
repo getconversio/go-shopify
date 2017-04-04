@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	UserAgent = "goshopify/0.1.0"
+	UserAgent = "goshopify/0.2.0"
 )
 
 // Basic app settings such as Api key, secret, scope, and redirect url.
@@ -104,6 +104,7 @@ func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*
 
 	// A bit of JSON ceremony
 	var js []byte = nil
+
 	if body != nil {
 		js, err = json.Marshal(body)
 		if err != nil {

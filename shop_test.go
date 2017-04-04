@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jarcoal/httpmock"
+	"gopkg.in/jarcoal/httpmock.v1"
 )
 
 func TestShopGet(t *testing.T) {

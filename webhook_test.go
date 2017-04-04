@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jarcoal/httpmock"
+	"gopkg.in/jarcoal/httpmock.v1"
 )
 
 func webhookTests(t *testing.T, webhook Webhook) {

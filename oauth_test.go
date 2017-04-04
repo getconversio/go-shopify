@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/jarcoal/httpmock"
+	"gopkg.in/jarcoal/httpmock.v1"
 )
 
 func TestAppAuthorizeUrl(t *testing.T) {
@@ -65,7 +65,7 @@ func TestAppVerifyAuthorizationURL(t *testing.T) {
 	for _, c := range cases {
 		actual := app.VerifyAuthorizationURL(c.u)
 		if actual != c.expected {
-			t.Errorf("App.VerifyAuthorizationURL(..., %s): expected %s, actual %s", c.u, c.expected, actual)
+			t.Errorf("App.VerifyAuthorizationURL(..., %s): expected %v, actual %v", c.u, c.expected, actual)
 		}
 	}
 }
