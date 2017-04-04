@@ -1,14 +1,17 @@
 package goshopify
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/jarcoal/httpmock"
+	"gopkg.in/jarcoal/httpmock.v1"
 )
 
 var (
@@ -60,7 +63,10 @@ func TestNewRequest(t *testing.T) {
 		Limit int `url:"limit"`
 	}
 
-	req, _ := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
+	req, err := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
+	if err != nil {
+		t.Fatalf("NewRequest(%v) err = %v, expected nil", inURL, err)
+	}
 
 	// Test relative URL was expanded
 	if req.URL.String() != outURL {
@@ -70,7 +76,7 @@ func TestNewRequest(t *testing.T) {
 	// Test body was JSON encoded
 	body, _ := ioutil.ReadAll(req.Body)
 	if string(body) != outBody {
-		t.Errorf("NewRequest(%v)Body = %v, expected %v", inBody, string(body), outBody)
+		t.Errorf("NewRequest(%v) Body = %v, expected %v", inBody, string(body), outBody)
 	}
 
 	// Test user-agent is attached to the request
@@ -96,6 +102,30 @@ func TestNewRequestMissingToken(t *testing.T) {
 	token := req.Header["X-Shopify-Access-Token"]
 	if token != nil {
 		t.Errorf("NewRequest() X-Shopify-Access-Token = %v, expected %v", token, nil)
+	}
+}
+
+func TestNewRequestError(t *testing.T) {
+	client := NewClient(app, "fooshop", "abcd")
+
+	cases := []struct {
+		method  string
+		inURL   string
+		body    interface{}
+		options interface{}
+	}{
+		{"GET", "://example.com", nil, nil}, // Error for malformed url
+		{"bad method", "/foo", nil, nil},    // Error for invalid method
+		{"GET", "/foo", func() {}, nil},     // Error for invalid body
+		{"GET", "/foo", nil, 123},           // Error for invalid options
+	}
+
+	for _, c := range cases {
+		_, err := client.NewRequest(c.method, c.inURL, c.body, c.options)
+
+		if err == nil {
+			t.Errorf("NewRequest(%v, %v, %v, %v) err = %v, expected error", c.method, c.inURL, c.body, c.options, err)
+		}
 	}
 }
 
@@ -127,6 +157,16 @@ func TestDo(t *testing.T) {
 			httpmock.NewStringResponder(400, `{"errors": {"title": ["wrong"]}}`),
 			ResponseError{Status: 400, Message: "wrong", Errors: []string{"title: wrong"}},
 		},
+		{
+			"foo/4",
+			httpmock.NewErrorResponder(errors.New("something something")),
+			errors.New("something something"),
+		},
+		{
+			"foo/5",
+			httpmock.NewStringResponder(200, `{foo:bar}`),
+			errors.New("invalid character 'f' looking for beginning of object key string"),
+		},
 	}
 
 	for _, c := range cases {
@@ -137,10 +177,61 @@ func TestDo(t *testing.T) {
 		req, _ := client.NewRequest("GET", c.url, nil, nil)
 		err := client.Do(req, body)
 
-		if err != nil && !reflect.DeepEqual(err, c.expected) {
-			t.Errorf("Do(): expected error %#v, actual %#v", c.expected, err)
+		if err != nil {
+			if e, ok := err.(*url.Error); ok {
+				err = e.Err
+			} else if e, ok := err.(*json.SyntaxError); ok {
+				err = errors.New(e.Error())
+			}
+
+			if !reflect.DeepEqual(err, c.expected) {
+				t.Errorf("Do(): expected error %#v, actual %#v", c.expected, err)
+			}
 		} else if err == nil && !reflect.DeepEqual(body, c.expected) {
 			t.Errorf("Do(): expected %#v, actual %#v", c.expected, body)
+		}
+	}
+}
+
+func TestCreateAndDo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	type MyStruct struct {
+		Foo string `json:"foo"`
+	}
+
+	cases := []struct {
+		url       string
+		responder httpmock.Responder
+		expected  interface{}
+	}{
+		{
+			"https://fooshop.myshopify.com/foo/1",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+		},
+		{
+			"https://fooshop.myshopify.com/foo/2",
+			httpmock.NewStringResponder(404, `{"error": "does not exist"}`),
+			ResponseError{Status: 404, Message: "does not exist"},
+		},
+		{
+			"://fooshop.myshopify.com/foo/2",
+			httpmock.NewStringResponder(200, ""),
+			errors.New("parse ://fooshop.myshopify.com/foo/2: missing protocol scheme"),
+		},
+	}
+
+	for _, c := range cases {
+		httpmock.RegisterResponder("GET", c.url, c.responder)
+		body := new(MyStruct)
+		err := client.CreateAndDo("GET", c.url, nil, nil, body)
+
+		if err != nil && fmt.Sprint(err) != fmt.Sprint(c.expected) {
+			t.Errorf("CreateAndDo(): expected error %v, actual %v", c.expected, err)
+		} else if err == nil && !reflect.DeepEqual(body, c.expected) {
+			t.Errorf("CreateAndDo(): expected %#v, actual %#v", c.expected, body)
 		}
 	}
 }
@@ -213,12 +304,16 @@ func TestCheckResponseError(t *testing.T) {
 			httpmock.NewStringResponse(400, `{"errors": { "order": ["order is wrong"] }}`),
 			ResponseError{Status: 400, Message: "order is wrong", Errors: []string{"order: order is wrong"}},
 		},
+		{
+			httpmock.NewStringResponse(400, `{error:bad request}`),
+			errors.New("invalid character 'e' looking for beginning of object key string"),
+		},
 	}
 
 	for _, c := range cases {
 		actual := CheckResponseError(c.resp)
-		if !reflect.DeepEqual(actual, c.expected) {
-			t.Errorf("CheckResponseError(): expected %#v, actual %#v", c.expected, actual)
+		if fmt.Sprint(actual) != fmt.Sprint(c.expected) {
+			t.Errorf("CheckResponseError(): expected %v, actual %v", c.expected, actual)
 		}
 	}
 }
