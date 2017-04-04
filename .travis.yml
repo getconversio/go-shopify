@@ -1,8 +1,12 @@
 language: go
 go:
-- 1.6
-- 1.7
-- 1.8
+  - 1.6
+  - 1.7
+  - 1.8
+script:
+  - go test -coverprofile=coverage.txt
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
   slack:
     secure: H5CP+m2bq7m2IyKafiwsgpINE/qKWknbGw+r5hVs6VA8kzAsUs9rNa6d6wcDcqQoadU17vytrOyzAxasAYBkjBFUijDLqp6o0LFhC37fHH7jOIL7eh2X1CkASjYmP8JO7LySgNmLVmFFxZihKcpCFjrbwfU8UT4qkpuAbdIubyZ8Nu2QlYwev47MIpP/C2Jc9QzmTmAz4Bqtmgm45bEL33E4iAZNMgULvZDs4A4zZFxQma6E0+YMeiXNiHfR0e/r1emztUbE15YcHqiW+TqQomFowANrSu3UJQPDbi2qTe3vNyK1EK+HG8O55wL3AgtilPepvwLkpzoe05GYSUN9K0gECVA1AUJQZQJi0XwqAE3S0Iimc3aqu2wUCrHCwz5dkiDPmiitSDyGWpwETznV2579RmC4bJCF+ovLS21MHzlooLhOXqJSxz5aA3Ikm5PsJpbL3xWfNUEuU8C34G9Sq49XAymIDijUIrEyDN1q3Azs13ZvYATt88LKUnGcKa+XMIVnfTQ7M630WXtmQb8yOngn3tBqHuS1si6PiZYlylCElYa1AaISJKZliwV17QvsaNcvxROb9oNfrEg7LBZmpxU2ntKdmznEgmtUP9f2OcOeyJKuzFYC6dvgx8PzyUuuGSbnuEBQKAP43Ij2i7J7dBgdIcWrsN/cm55x2QIZ5eY=
