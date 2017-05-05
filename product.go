@@ -2,6 +2,7 @@ package goshopify
 
 import (
 	"fmt"
+	"time"
 )
 
 const productsBasePath = "admin/products"
@@ -25,13 +26,13 @@ type ProductServiceOp struct {
 type Product struct {
 	ID             int             `json:"id"`
 	Title          string          `json:"title"`
-	BoldHTML       string          `json:"body_html"`
+	BodyHTML       string          `json:"body_html"`
 	Vendor         string          `json:"vendor"`
 	ProductType    string          `json:"product_type"`
 	Handle         string          `json:"handle"`
-	CreatedAt      string          `json:"created_at"`
-	UpdatedAt      string          `json:"updated_at"`
-	PublishedAt    string          `json:"published_at"`
+	CreatedAt      *time.Time      `json:"created_at"`
+	UpdatedAt      *time.Time      `json:"updated_at"`
+	PublishedAt    *time.Time      `json:"published_at"`
 	PublishedScope string          `json:"published_scope"`
 	Tags           string          `json:"tags"`
 	Options        []ProductOption `json:"options"`
