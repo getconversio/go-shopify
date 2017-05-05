@@ -2,6 +2,7 @@ package goshopify
 
 import (
 	"fmt"
+	"time"
 )
 
 const productsBasePath = "admin/products"
@@ -23,8 +24,28 @@ type ProductServiceOp struct {
 
 // Product represents a Shopify product
 type Product struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
+	ID             int             `json:"id"`
+	Title          string          `json:"title"`
+	BodyHTML       string          `json:"body_html"`
+	Vendor         string          `json:"vendor"`
+	ProductType    string          `json:"product_type"`
+	Handle         string          `json:"handle"`
+	CreatedAt      *time.Time      `json:"created_at"`
+	UpdatedAt      *time.Time      `json:"updated_at"`
+	PublishedAt    *time.Time      `json:"published_at"`
+	PublishedScope string          `json:"published_scope"`
+	Tags           string          `json:"tags"`
+	Options        []ProductOption `json:"options"`
+	Variants       []Variant       `json:"variants"`
+}
+
+// The options provided by Shopify
+type ProductOption struct {
+	ID        int      `json:"id"`
+	ProductID int      `json:"product_id"`
+	Name      string   `json:"name"`
+	Position  int      `json:"position"`
+	Values    []string `json:"values"`
 }
 
 // Represents the result from the products/X.json endpoint
