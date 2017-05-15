@@ -28,7 +28,7 @@ type Variant struct {
 	Barcode              string           `json:"barcode"`
 	ImageID              int              `json:"image_id"`
 	InventoryQuantity    int              `json:"inventory_quantity"`
-	Weight               int              `json:"weight"`
+	Weight               *decimal.Decimal `json:"weight"`
 	WeightUnit           string           `json:"weight_unit"`
 	OldInventoryQuantity int              `json:"old_inventory_quantity"`
 	RequireShipping      bool             `json:"requires_shipping"`
