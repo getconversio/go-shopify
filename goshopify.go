@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -72,6 +73,13 @@ func (e ResponseError) Error() string {
 	}
 
 	return "Unknown Error"
+}
+
+// An error specific to a rate-limiting response. Embeds the ResponseError to
+// allow consumers to handle it the same was a normal ResponseError.
+type RateLimitError struct {
+	ResponseError
+	RetryAfter int
 }
 
 // Creates an API request. A relative URL can be provided in urlStr, which will
@@ -169,6 +177,17 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	return nil
 }
 
+func wrapSpecificError(r *http.Response, err ResponseError) error {
+	if err.Status == 429 {
+		f, _ := strconv.ParseFloat(r.Header.Get("retry-after"), 64)
+		return RateLimitError{
+			ResponseError: err,
+			RetryAfter:    int(f),
+		}
+	}
+	return err
+}
+
 func CheckResponseError(r *http.Response) error {
 	if r.StatusCode >= 200 && r.StatusCode < 300 {
 		return nil
@@ -194,7 +213,7 @@ func CheckResponseError(r *http.Response) error {
 
 	// If the errors field is not filled out, we can return here.
 	if shopifyError.Errors == nil {
-		return responseError
+		return wrapSpecificError(r, responseError)
 	}
 
 	// Shopify errors usually have the form:
@@ -241,7 +260,7 @@ func CheckResponseError(r *http.Response) error {
 		}
 	}
 
-	return responseError
+	return wrapSpecificError(r, responseError)
 }
 
 // General list options that can be used for most collections of entities.
