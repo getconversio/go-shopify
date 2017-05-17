@@ -167,6 +167,21 @@ func TestDo(t *testing.T) {
 			httpmock.NewStringResponder(200, `{foo:bar}`),
 			errors.New("invalid character 'f' looking for beginning of object key string"),
 		},
+		{
+			"foo/6",
+			func(req *http.Request) (*http.Response, error) {
+				resp := httpmock.NewStringResponse(429, `{"errors":"Exceeded 2 calls per second for api client. Reduce request rates to resume uninterrupted service."}`)
+				resp.Header.Add("Retry-After", "2.0")
+				return resp, nil
+			},
+			RateLimitError{
+				RetryAfter: 2,
+				ResponseError: ResponseError{
+					Status:  429,
+					Message: "Exceeded 2 calls per second for api client. Reduce request rates to resume uninterrupted service.",
+				},
+			},
+		},
 	}
 
 	for _, c := range cases {
