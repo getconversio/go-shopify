@@ -37,6 +37,8 @@ type Product struct {
 	Tags           string          `json:"tags"`
 	Options        []ProductOption `json:"options"`
 	Variants       []Variant       `json:"variants"`
+	Image          Image           `json:"image"`
+	Images         []Image         `json:"images"`
 }
 
 // The options provided by Shopify
