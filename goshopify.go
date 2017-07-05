@@ -270,12 +270,17 @@ type ListOptions struct {
 	SinceID      int       `url:"since_id,omitempty"`
 	CreatedAtMin time.Time `url:"created_at_min,omitempty"`
 	CreatedAtMax time.Time `url:"created_at_max,omitempty"`
+	UpdatedAtMin time.Time `url:"updated_at_min,omitempty"`
+	UpdatedAtMax time.Time `url:"updated_at_max,omitempty"`
+	Order        string    `url:"order,omitempty"`
 }
 
 // General count options that can be used for most collection counts.
 type CountOptions struct {
 	CreatedAtMin time.Time `url:"created_at_min,omitempty"`
 	CreatedAtMax time.Time `url:"created_at_max,omitempty"`
+	UpdatedAtMin time.Time `url:"updated_at_min,omitempty"`
+	UpdatedAtMax time.Time `url:"updated_at_max,omitempty"`
 }
 
 func (c *Client) Count(path string, options interface{}) (int, error) {
@@ -291,7 +296,6 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 	if err != nil {
 		return err
 	}
-
 	err = c.Do(req, resource)
 	if err != nil {
 		return err
