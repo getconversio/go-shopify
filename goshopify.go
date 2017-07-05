@@ -296,6 +296,7 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 	if err != nil {
 		return err
 	}
+
 	err = c.Do(req, resource)
 	if err != nil {
 		return err
