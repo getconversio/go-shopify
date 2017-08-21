@@ -26,6 +26,7 @@ type App struct {
 	ApiSecret   string
 	RedirectUrl string
 	Scope       string
+	Password    string
 }
 
 // Client manages communication with the Shopify API.
@@ -130,6 +131,8 @@ func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*
 	req.Header.Add("User-Agent", UserAgent)
 	if c.token != "" {
 		req.Header.Add("X-Shopify-Access-Token", c.token)
+	} else if c.app.Password != "" {
+		req.SetBasicAuth(c.app.ApiKey, c.app.Password)
 	}
 	return req, nil
 }

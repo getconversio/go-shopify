@@ -80,6 +80,22 @@ client := goshopify.NewClient(app, "shopname", "token")
 numProducts, err := client.Product.Count(nil)
 ```
 
+#### Private App Auth
+```go
+// Create an app somewhere.
+app := goshopify.App{
+	ApiKey: "apikey",
+	Password: "apipassword",
+}
+
+// Create a new API client
+client := goshopify.NewClient(app, "shopname", "")
+
+// Fetch the number of products.
+numProducts, err := client.Product.Count(nil)
+```
+
+
 #### Query options
 
 Most API functions take an options `interface{}` as parameter. You can use one

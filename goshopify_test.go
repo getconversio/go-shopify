@@ -25,6 +25,7 @@ func setup() {
 		ApiSecret:   "hush",
 		RedirectUrl: "https://example.com/callback",
 		Scope:       "read_products",
+		Password:    "privateapppassword",
 	}
 	client = NewClient(app, "fooshop", "abcd")
 	httpmock.Activate()
@@ -44,6 +45,14 @@ func loadFixture(filename string) []byte {
 
 func TestNewClient(t *testing.T) {
 	c := NewClient(app, "fooshop", "abcd")
+	expected := "https://fooshop.myshopify.com"
+	if c.baseURL.String() != expected {
+		t.Errorf("NewClient BaseURL = %v, expected %v", c.baseURL.String(), expected)
+	}
+}
+
+func TestNewClientWithNoToken(t *testing.T) {
+	c := NewClient(app, "fooshop", "")
 	expected := "https://fooshop.myshopify.com"
 	if c.baseURL.String() != expected {
 		t.Errorf("NewClient BaseURL = %v, expected %v", c.baseURL.String(), expected)
@@ -90,6 +99,63 @@ func TestNewRequest(t *testing.T) {
 	expected := "abcd"
 	if token != expected {
 		t.Errorf("NewRequest() X-Shopify-Access-Token = %v, expected %v", token, expected)
+	}
+}
+
+func TestNewRequestForPrivateApp(t *testing.T) {
+	c := NewClient(app, "fooshop", "")
+
+	inURL, outURL := "foo?page=1", "https://fooshop.myshopify.com/foo?limit=10&page=1"
+	inBody := struct {
+		Hello string `json:"hello"`
+	}{Hello: "World"}
+	outBody := `{"hello":"World"}`
+
+	type extraOptions struct {
+		Limit int `url:"limit"`
+	}
+
+	req, err := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
+	if err != nil {
+		t.Fatalf("NewRequest(%v) err = %v, expected nil", inURL, err)
+	}
+
+	// Test relative URL was expanded
+	if req.URL.String() != outURL {
+		t.Errorf("NewRequest(%v) URL = %v, expected %v", inURL, req.URL, outURL)
+	}
+
+	// Test body was JSON encoded
+	body, _ := ioutil.ReadAll(req.Body)
+	if string(body) != outBody {
+		t.Errorf("NewRequest(%v) Body = %v, expected %v", inBody, string(body), outBody)
+	}
+
+	// Test user-agent is attached to the request
+	userAgent := req.Header.Get("User-Agent")
+	if userAgent != UserAgent {
+		t.Errorf("NewRequest() User-Agent = %v, expected %v", userAgent, UserAgent)
+	}
+
+	// Test token is not attached to the request
+	token := req.Header.Get("X-Shopify-Access-Token")
+	expected := ""
+	if token != expected {
+		t.Errorf("NewRequest() X-Shopify-Access-Token = %v, expected %v", token, expected)
+	}
+
+	// Test Basic Auth Set
+	username, password, ok := req.BasicAuth()
+	if username != app.ApiKey {
+		t.Errorf("NewRequestPrivateApp() Username = %v, expected %v", username, app.ApiKey)
+	}
+
+	if password != app.Password {
+		t.Errorf("NewRequestPrivateApp() Password = %v, expected %v", password, app.Password)
+	}
+
+	if ok != true {
+		t.Errorf("NewRequestPrivateApp() ok = %v, expected %v", ok, true)
 	}
 }
 
