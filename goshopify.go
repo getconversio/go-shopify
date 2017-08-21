@@ -26,7 +26,7 @@ type App struct {
 	ApiSecret   string
 	RedirectUrl string
 	Scope       string
-	Password	string
+	Password    string
 }
 
 // Client manages communication with the Shopify API.

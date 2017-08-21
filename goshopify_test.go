@@ -25,7 +25,7 @@ func setup() {
 		ApiSecret:   "hush",
 		RedirectUrl: "https://example.com/callback",
 		Scope:       "read_products",
-		Password:	 "privateapppassword",
+		Password:    "privateapppassword",
 	}
 	client = NewClient(app, "fooshop", "abcd")
 	httpmock.Activate()
