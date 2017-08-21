@@ -2,7 +2,7 @@
 
 Another Shopify Api Library in Go.
 
-**Warning**: This library is not ready for primetime :-)
+**Note**: The library does not have implementations of all Shopify resources, but it is being used in production by Conversio and should be stable for usage. PRs for new resources and endpoints are welcome, or you can simply implement some yourself as-you-go. See the section "Using your own models" for more info.
 
 [![Build Status](https://travis-ci.org/getconversio/go-shopify.svg?branch=master)](https://travis-ci.org/getconversio/go-shopify)
 [![codecov](https://codecov.io/gh/getconversio/go-shopify/branch/master/graph/badge.svg)](https://codecov.io/gh/getconversio/go-shopify)
@@ -35,7 +35,7 @@ app := goshopify.App{
     Scope: "read_products",
 }
 
-// Create an oauth-authorize url for and redirect to it.
+// Create an oauth-authorize url for the app and redirect to it.
 // In some request handler, you probably want something like this:
 func MyHandler(w http.ResponseWriter, r *http.Request) {
     shopName := r.URL.Query().Get("shop")
@@ -60,7 +60,7 @@ func MyCallbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-#### Api calls
+#### Api calls with a token
 
 With a permanent access token, you can make API calls like this:
 
@@ -81,6 +81,9 @@ numProducts, err := client.Product.Count(nil)
 ```
 
 #### Private App Auth
+
+Private Shopify apps use basic authentication and do not require going through the OAuth flow. Here is an example:
+
 ```go
 // Create an app somewhere.
 app := goshopify.App{
@@ -88,13 +91,12 @@ app := goshopify.App{
 	Password: "apipassword",
 }
 
-// Create a new API client
+// Create a new API client (notice the token parameter is the empty string)
 client := goshopify.NewClient(app, "shopname", "")
 
 // Fetch the number of products.
 numProducts, err := client.Product.Count(nil)
 ```
-
 
 #### Query options
 
