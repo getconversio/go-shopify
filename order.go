@@ -75,6 +75,7 @@ type Order struct {
 	NoteAttributes        []NoteAttribute  `json:"note_attributes"`
 	DiscountCodes         []DiscountCode   `json:"discount_codes"`
 	LineItems             []LineItem       `json:"line_items"`
+	ShippingLines         []ShippingLines  `json:"shipping_lines"`
 }
 
 type Address struct {
@@ -135,6 +136,25 @@ type OrderResource struct {
 // Represents the result from the orders.json endpoint
 type OrdersResource struct {
 	Orders []Order `json:"orders"`
+}
+
+type ShippingLines struct {
+	ID                            int              `json:"id"`
+	Title                         string           `json:"title"`
+	Price                         *decimal.Decimal `json:"price"`
+	Code                          string           `json:"code"`
+	Source                        string           `json:"source"`
+	Phone                         string           `json:"phone"`
+	RequestedFulfillmentServiceID string           `json:"requested_fulfillment_service_id"`
+	DeliveryCategory              string           `json:"delivery_category"`
+	CarrierIdentifier             string           `json:"carrier_identifier"`
+	TaxLines                      []TaxLine        `json:"tax_lines"`
+}
+
+type TaxLine struct {
+	Title string           `json:"title"`
+	Price *decimal.Decimal `json:"price"`
+	Rate  *decimal.Decimal `json:"rate"`
 }
 
 // List orders
