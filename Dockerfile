@@ -1,4 +1,4 @@
-FROM golang:1.8
+FROM golang:1.9
 
 # This is similar to the golang-onbuild image but with different paths and
 # test-dependencies loaded as well.
