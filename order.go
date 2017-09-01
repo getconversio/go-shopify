@@ -69,7 +69,6 @@ type Order struct {
 	OrderNumber           int              `json:"order_number"`
 	Note                  string           `json:"note"`
 	Test                  bool             `json:"test"`
-	Gateway               string           `json:"gateway"`
 	BrowserIp             string           `json:"browser_ip"`
 	BuyerAcceptsMarketing bool             `json:"buyer_accepts_marketing"`
 	CancelReason          string           `json:"cancel_reason"`
