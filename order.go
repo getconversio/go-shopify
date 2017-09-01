@@ -69,12 +69,13 @@ type Order struct {
 	OrderNumber           int              `json:"order_number"`
 	Note                  string           `json:"note"`
 	Test                  bool             `json:"test"`
-	BrowserIP             string           `json:"browser_ip"`
+	BrowserIp             string           `json:"browser_ip"`
 	BuyerAcceptsMarketing bool             `json:"buyer_accepts_marketing"`
 	CancelReason          string           `json:"cancel_reason"`
 	NoteAttributes        []NoteAttribute  `json:"note_attributes"`
 	DiscountCodes         []DiscountCode   `json:"discount_codes"`
 	LineItems             []LineItem       `json:"line_items"`
+	ShippingLines         []ShippingLines  `json:"shipping_lines"`
 }
 
 type Address struct {
@@ -137,17 +138,17 @@ type OrdersResource struct {
 	Orders []Order `json:"orders"`
 }
 
-type ShippingLine struct {
-	ID                  int              `json:"id"`
-	Title               string           `json:"title"`
-	Price               *decimal.Decimal `json:"price"`
-	Code                string           `json:"code"`
-	Source              string           `json:"source"`
-	Phone               string           `json:"phone"`
-	RequestedFufillment string           `json:"requested_fulfillment_service_id"`
-	DeliveryCategory    string           `json:"delivery_category"`
-	CarrierID           string           `json:"carrier_identifier"`
-	TaxLines            []TaxLine        `json:"tax_lines"`
+type ShippingLines struct {
+	ID                            int              `json:"id"`
+	Title                         string           `json:"title"`
+	Price                         *decimal.Decimal `json:"price"`
+	Code                          string           `json:"code"`
+	Source                        string           `json:"source"`
+	Phone                         string           `json:"phone"`
+	RequestedFulfillmentServiceID string           `json:"requested_fulfillment_service_id"`
+	DeliveryCategory              string           `json:"delivery_category"`
+	CarrierIdentifier             string           `json:"carrier_identifier"`
+	TaxLines                      []TaxLine        `json:"tax_lines"`
 }
 
 type TaxLine struct {
