@@ -61,6 +61,7 @@ type Order struct {
 	TotalLineItemsPrice   *decimal.Decimal `json:"total_line_items_price"`
 	TaxesIncluded         bool             `json:"taxes_included"`
 	TotalTax              *decimal.Decimal `json:"total_tax"`
+	TaxLines              []TaxLine        `json:"tax_lines"`
 	TotalWeight           int              `json:"total_weight"`
 	FinancialStatus       string           `json:"financial_status"`
 	FulfillmentStatus     string           `json:"fulfillment_status"`
