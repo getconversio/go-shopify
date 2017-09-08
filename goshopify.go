@@ -1,3 +1,4 @@
+// Package goshopify provides methods for making requests to Shopify's admin API.
 package goshopify
 
 import (
@@ -16,10 +17,10 @@ import (
 )
 
 const (
-	UserAgent = "goshopify/0.2.0"
+	UserAgent = "goshopify/1.0.0"
 )
 
-// Basic app settings such as Api key, secret, scope, and redirect url.
+// App represents basic app settings such as Api key, secret, scope, and redirect url.
 // See oauth.go for OAuth related helper functions.
 type App struct {
 	ApiKey      string
@@ -294,6 +295,15 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 	return resource.Count, err
 }
 
+// CreateAndDo performs a web request to Shopify with the given method (GET,
+// POST, PUT, DELETE) and relative path (e.g. "/admin/orders.json").
+// The data, options and resource arguments are optional and only relevant in
+// certain situations.
+// If the data argument is non-nil, it will be used as the body of the request
+// for POST and PUT requests.
+// The options argument is used for specifying request options such as search
+// parameters like created_at_min
+// Any data returned from Shopify will be marshalled into resource argument.
 func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}) error {
 	req, err := c.NewRequest(method, path, data, options)
 	if err != nil {
@@ -308,20 +318,25 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 	return nil
 }
 
-// Perform a Get request for the given path and save the result in the given
-// resource.
+// Get performs a GET request for the given path and saves the result in the
+// given resource.
 func (c *Client) Get(path string, resource, options interface{}) error {
 	return c.CreateAndDo("GET", path, nil, options, resource)
 }
 
-// Perform a POST request for the given path and save the result in the given
-// resource.
+// Post performs a POST request for the given path and saves the result in the
+// given resource.
 func (c *Client) Post(path string, data, resource interface{}) error {
 	return c.CreateAndDo("POST", path, data, nil, resource)
 }
 
-// Perform a PUT request for the given path and save the result in the given
-// resource.
+// Put performs a PUT request for the given path and saves the result in the
+// given resource.
 func (c *Client) Put(path string, data, resource interface{}) error {
 	return c.CreateAndDo("PUT", path, data, nil, resource)
+}
+
+// Delete performs a DELETE request for the given path
+func (c *Client) Delete(path string) error {
+	return c.CreateAndDo("DELETE", path, nil, nil, nil)
 }
