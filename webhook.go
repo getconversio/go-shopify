@@ -16,10 +16,11 @@ type WebhookService interface {
 	Get(int, interface{}) (*Webhook, error)
 	Create(Webhook) (*Webhook, error)
 	Update(Webhook) (*Webhook, error)
+	Delete(int) error
 }
 
-// ShopServiceOp handles communication with the shop related methods of the
-// Shopify API.
+// WebhookServiceOp handles communication with the webhook-related methods of
+// the Shopify API.
 type WebhookServiceOp struct {
 	client *Client
 }
@@ -36,16 +37,18 @@ type Webhook struct {
 	MetafieldNamespaces []string   `json:"metafield_namespaces"`
 }
 
+// WebhookOptions can be used for filtering webhooks on a List request.
 type WebhookOptions struct {
 	Address string `url:"address,omitempty"`
 	Topic   string `url:"topic,omitempty"`
 }
 
-// Represents the result from the admin/shop.json endpoint
+// WebhookResource represents the result from the admin/webhooks.json endpoint
 type WebhookResource struct {
 	Webhook *Webhook `json:"webhook"`
 }
 
+// WebhooksResource is the root object for a webhook get request.
 type WebhooksResource struct {
 	Webhooks []Webhook `json:"webhooks"`
 }
@@ -88,4 +91,9 @@ func (s *WebhookServiceOp) Update(webhook Webhook) (*Webhook, error) {
 	resource := new(WebhookResource)
 	err := s.client.Put(path, wrappedData, resource)
 	return resource.Webhook, err
+}
+
+// Delete an existing webhooks
+func (s *WebhookServiceOp) Delete(ID int) error {
+	return s.client.Delete(fmt.Sprintf("%s/%d.json", webhooksBasePath, ID))
 }
