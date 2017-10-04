@@ -8,6 +8,14 @@ import (
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
+func productTests(t *testing.T, product Product) {
+	// Check that ID is assigned to the returned product
+	expectedInt := 1071559748
+	if product.ID != expectedInt {
+		t.Errorf("Product.ID returned %+v, expected %+v", product.ID, expectedInt)
+	}
+}
+
 func TestProductList(t *testing.T) {
 	setup()
 	defer teardown()
@@ -91,14 +99,9 @@ func TestProductCreate(t *testing.T) {
 	}
 
 	returnedProduct, err := client.Product.Create(product)
-
 	if err != nil {
 		t.Errorf("Product.Create returned error: %v", err)
 	}
-	if returnedProduct.ID != 1071559748 {
-		t.Errorf("ID was not properly set in Product.Create. Expected: %d.  Received: %d", 107151559748, returnedProduct.ID)
-	}
-	if returnedProduct.Title != product.Title {
-		t.Errorf("Title was not properly set in Product.Create.  Expected: %v.  Received: %v", product.Title, returnedProduct.Title)
-	}
+
+	productTests(t, *returnedProduct)
 }

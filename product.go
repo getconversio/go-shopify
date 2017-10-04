@@ -83,6 +83,7 @@ func (s *ProductServiceOp) Get(productID int, options interface{}) (*Product, er
 	return resource.Product, err
 }
 
+// Create a new product
 func (s *ProductServiceOp) Create(product Product) (*Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
 	wrappedData := ProductResource{Product: &product}
