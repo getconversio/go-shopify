@@ -5,8 +5,16 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/jarcoal/httpmock.v1"
+	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
+
+func productTests(t *testing.T, product Product) {
+	// Check that ID is assigned to the returned product
+	expectedInt := 1071559748
+	if product.ID != expectedInt {
+		t.Errorf("Product.ID returned %+v, expected %+v", product.ID, expectedInt)
+	}
+}
 
 func TestProductList(t *testing.T) {
 	setup()
@@ -74,4 +82,26 @@ func TestProductGet(t *testing.T) {
 	if !reflect.DeepEqual(product, expected) {
 		t.Errorf("Product.Get returned %+v, expected %+v", product, expected)
 	}
+}
+
+func TestProductCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products.json",
+		httpmock.NewBytesResponder(200, loadFixture("product.json")))
+
+	product := Product{
+		Title:       "Burton Custom Freestyle 151",
+		BodyHTML:    "<strong>Good snowboard!<\\/strong>",
+		Vendor:      "Burton",
+		ProductType: "Snowboard",
+	}
+
+	returnedProduct, err := client.Product.Create(product)
+	if err != nil {
+		t.Errorf("Product.Create returned error: %v", err)
+	}
+
+	productTests(t, *returnedProduct)
 }
