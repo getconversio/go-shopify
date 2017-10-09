@@ -40,6 +40,23 @@ func orderTests(t *testing.T, order Order) {
 	}
 }
 
+func transactionTest(t *testing.T, transaction Transaction) {
+	// Check that dates are parsed
+	d := time.Date(2017, time.October, 9, 19, 26, 23, 0, time.UTC)
+	if !d.Equal(*transaction.CreatedAt) {
+		t.Errorf("Transaction.CreatedAt returned %+v, expected %+v", transaction.CreatedAt, d)
+	}
+
+	// Check null value
+	if transaction.LocationID != nil {
+		t.Error("Expected Transaction.LocationID to be nil")
+	}
+
+	if transaction.PaymentDetails == nil {
+		t.Error("Expected Transaction.PaymentDetails to not be nil")
+	}
+}
+
 func TestOrderList(t *testing.T) {
 	setup()
 	defer teardown()
@@ -100,6 +117,31 @@ func TestOrderGet(t *testing.T) {
 	}
 
 	orderTests(t, *order)
+}
+
+func TestOrderGetWithTransactions(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/123456.json",
+		httpmock.NewBytesResponder(200, loadFixture("order_with_transaction.json")))
+
+	order, err := client.Order.Get(123456, nil)
+	if err != nil {
+		t.Errorf("Order.List returned error: %v", err)
+	}
+
+	orderTests(t, *order)
+
+	// Check transactions is not nil
+	if order.Transactions == nil {
+		t.Error("Expected Transactions to not be nil")
+	}
+	if len(order.Transactions) != 1 {
+		t.Errorf("Expected Transactions to have 1 transaction but recieved %v", len(order.Transactions))
+	}
+
+	transactionTest(t, order.Transactions[0])
 }
 
 func TestOrderCount(t *testing.T) {
