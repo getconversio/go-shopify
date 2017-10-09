@@ -110,11 +110,11 @@ func TestProductUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/4759306.json",
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/1.json",
 		httpmock.NewBytesResponder(200, loadFixture("product.json")))
 
 	product := Product{
-		ID:          1071559748,
+		ID:          1,
 		ProductType: "Skateboard",
 	}
 
