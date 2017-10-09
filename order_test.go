@@ -126,7 +126,11 @@ func TestOrderGetWithTransactions(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/123456.json",
 		httpmock.NewBytesResponder(200, loadFixture("order_with_transaction.json")))
 
-	order, err := client.Order.Get(123456, nil)
+	options := struct {
+		ApiFeatures string `url:"_apiFeatures"`
+	}{"include-transactions"}
+
+	order, err := client.Order.Get(123456, options)
 	if err != nil {
 		t.Errorf("Order.List returned error: %v", err)
 	}
@@ -138,7 +142,7 @@ func TestOrderGetWithTransactions(t *testing.T) {
 		t.Error("Expected Transactions to not be nil")
 	}
 	if len(order.Transactions) != 1 {
-		t.Errorf("Expected Transactions to have 1 transaction but recieved %v", len(order.Transactions))
+		t.Errorf("Expected Transactions to have 1 transaction but received %v", len(order.Transactions))
 	}
 
 	transactionTest(t, order.Transactions[0])
