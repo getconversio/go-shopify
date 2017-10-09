@@ -15,6 +15,7 @@ type ProductService interface {
 	Count(interface{}) (int, error)
 	Get(int, interface{}) (*Product, error)
 	Create(Product) (*Product, error)
+	Update(Product) (*Product, error)
 }
 
 // ProductServiceOp handles communication with the product related methods of
@@ -89,5 +90,14 @@ func (s *ProductServiceOp) Create(product Product) (*Product, error) {
 	wrappedData := ProductResource{Product: &product}
 	resource := new(ProductResource)
 	err := s.client.Post(path, wrappedData, resource)
+	return resource.Product, err
+}
+
+// Update an existing product.
+func (s *ProductServiceOp) Update(product Product) (*Product, error) {
+	path := fmt.Sprintf("%s/%d.json", productsBasePath, product.ID)
+	wrappedData := ProductResource{Product: &product}
+	resource := new(ProductResource)
+	err := s.client.Put(path, wrappedData, resource)
 	return resource.Product, err
 }
