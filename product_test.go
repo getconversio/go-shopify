@@ -105,3 +105,23 @@ func TestProductCreate(t *testing.T) {
 
 	productTests(t, *returnedProduct)
 }
+
+func TestProductUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/4759306.json",
+		httpmock.NewBytesResponder(200, loadFixture("product.json")))
+
+	product := Product{
+		ID:          1071559748,
+		ProductType: "Skateboard",
+	}
+
+	returnedProduct, err := client.Product.Update(product)
+	if err != nil {
+		t.Errorf("Product.Update returned error: %v", err)
+	}
+
+	productTests(t, *returnedProduct)
+}
