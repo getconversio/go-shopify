@@ -78,6 +78,7 @@ type Order struct {
 	DiscountCodes         []DiscountCode   `json:"discount_codes"`
 	LineItems             []LineItem       `json:"line_items"`
 	ShippingLines         []ShippingLines  `json:"shipping_lines"`
+	Transactions          []Transaction    `json:"transactions"`
 }
 
 type Address struct {
@@ -140,6 +141,14 @@ type OrdersResource struct {
 	Orders []Order `json:"orders"`
 }
 
+type PaymentDetails struct {
+	AVSResultCode     string `json:"avs_result_code"`
+	CreditCardBin     string `json:"credit_card_bin"`
+	CVVResultCode     string `json:"cvv_result_code"`
+	CreditCardNumber  string `json:"credit_card_number"`
+	CreditCardCompany string `json:"credit_card_company"`
+}
+
 type ShippingLines struct {
 	ID                            int              `json:"id"`
 	Title                         string           `json:"title"`
@@ -157,6 +166,27 @@ type TaxLine struct {
 	Title string           `json:"title"`
 	Price *decimal.Decimal `json:"price"`
 	Rate  *decimal.Decimal `json:"rate"`
+}
+
+type Transaction struct {
+	ID             int              `json:"id"`
+	OrderID        int              `json:"order_id"`
+	Amount         *decimal.Decimal `json:"amount"`
+	Kind           string           `json:"kind"`
+	Gateway        string           `json:"gateway"`
+	Status         string           `json:"status"`
+	Message        string           `json:"message"`
+	CreatedAt      *time.Time       `json:"created_at"`
+	Test           bool             `json:"test"`
+	Authorization  string           `json:"authorization"`
+	Currency       string           `json:"currency"`
+	LocationID     *int             `json:"location_id"`
+	UserID         *int             `json:"user_id"`
+	ParentID       *int             `json:"parent_id"`
+	DeviceID       *int             `json:"device_id"`
+	ErrorCode      string           `json:"error_code"`
+	SourceName     string           `json:"source_name"`
+	PaymentDetails *PaymentDetails  `json:"payment_details"`
 }
 
 // List orders
