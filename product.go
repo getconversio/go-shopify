@@ -102,3 +102,8 @@ func (s *ProductServiceOp) Update(product Product) (*Product, error) {
 	err := s.client.Put(path, wrappedData, resource)
 	return resource.Product, err
 }
+
+// Delete an existing product
+func (s *ProductServiceOp) Delete(productID int) error {
+	return s.client.Delete(fmt.Sprintf("%s/%d.json", productsBasePath, productID))
+}
