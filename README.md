@@ -32,7 +32,7 @@ app := goshopify.App{
     ApiKey: "abcd",
     ApiSecret: "efgh",
     RedirectUrl: "https://example.com/shopify/callback",
-    Scope: "read_products",
+    Scope: "read_products,read_orders",
 }
 
 // Create an oauth-authorize url for the app and redirect to it.
