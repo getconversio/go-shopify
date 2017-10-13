@@ -16,6 +16,7 @@ type ProductService interface {
 	Get(int, interface{}) (*Product, error)
 	Create(Product) (*Product, error)
 	Update(Product) (*Product, error)
+	Delete(int) error
 }
 
 // ProductServiceOp handles communication with the product related methods of
