@@ -125,3 +125,16 @@ func TestProductUpdate(t *testing.T) {
 
 	productTests(t, *returnedProduct)
 }
+
+func TestProductDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Product.Delete(1)
+	if err != nil {
+		t.Errorf("Product.Delete returned error: %v", err)
+	}
+}
