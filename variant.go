@@ -13,6 +13,7 @@ import (
 type VariantService interface {
 	List(int, interface{}) ([]Variant, error)
 	Count(int, interface{}) (int, error)
+	Get(int, interface{}) (*Variant, error)
 }
 
 // VariantServiceOp handles communication with the variant related methods of
