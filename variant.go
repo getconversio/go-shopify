@@ -6,6 +6,19 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// VariantService is an interface for interacting with the variant endpoints
+// of the Shopify API.
+// See https://help.shopify.com/api/reference/product_variant
+type VariantService interface {
+	List(int, interface{}) ([]Variant, error)
+}
+
+// VariantServiceOp handles communication with the variant related methods of
+// the Shopify API.
+type VariantServiceOp struct {
+	client *Client
+}
+
 // Variant represents a Shopify variant
 type Variant struct {
 	ID                   int              `json:"id"`
@@ -32,4 +45,9 @@ type Variant struct {
 	WeightUnit           string           `json:"weight_unit"`
 	OldInventoryQuantity int              `json:"old_inventory_quantity"`
 	RequireShipping      bool             `json:"requires_shipping"`
+}
+
+// VariantsResource represents the result from the products/X/variants.json endpoint
+type VariantsResource struct {
+	Variants []Variant `json:"variants"`
 }
