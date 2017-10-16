@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -50,4 +51,12 @@ type Variant struct {
 // VariantsResource represents the result from the products/X/variants.json endpoint
 type VariantsResource struct {
 	Variants []Variant `json:"variants"`
+}
+
+// List variants
+func (s *VariantServiceOp) List(productID int, options interface{}) ([]Variant, error) {
+	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
+	resource := new(VariantsResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Variants, err
 }
