@@ -63,7 +63,7 @@ func TestVariantGet(t *testing.T) {
 	defer teardown()
 
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/variants/1.json",
-		httpmock.NewStringResponder(200, `{"product": {"id":1}}`))
+		httpmock.NewStringResponder(200, `{"variant": {"id":1}}`))
 
 	variant, err := client.Variant.Get(1, nil)
 	if err != nil {

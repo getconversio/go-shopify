@@ -7,6 +7,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+const variantsBasePath = "admin/variants"
+
 // VariantService is an interface for interacting with the variant endpoints
 // of the Shopify API.
 // See https://help.shopify.com/api/reference/product_variant
@@ -50,6 +52,11 @@ type Variant struct {
 	RequireShipping      bool             `json:"requires_shipping"`
 }
 
+// VariantResource represents the result from the variants/X.json endpoint
+type VariantResource struct {
+	Variant *Variant `json:"variant"`
+}
+
 // VariantsResource represents the result from the products/X/variants.json endpoint
 type VariantsResource struct {
 	Variants []Variant `json:"variants"`
@@ -67,4 +74,12 @@ func (s *VariantServiceOp) List(productID int, options interface{}) ([]Variant, 
 func (s *VariantServiceOp) Count(productID int, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/%d/variants/count.json", productsBasePath, productID)
 	return s.client.Count(path, options)
+}
+
+// Get individual variant
+func (s *VariantServiceOp) Get(variantID int, options interface{}) (*Variant, error) {
+	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variantID)
+	resource := new(VariantResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Variant, err
 }
