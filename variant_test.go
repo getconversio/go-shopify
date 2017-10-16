@@ -57,3 +57,21 @@ func TestVariantCount(t *testing.T) {
 		t.Errorf("Variant.Count returned %d, expected %d", cnt, expected)
 	}
 }
+
+func TestVariantGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/variants/1.json",
+		httpmock.NewStringResponder(200, `{"product": {"id":1}}`))
+
+	variant, err := client.Variant.Get(1, nil)
+	if err != nil {
+		t.Errorf("Variant.Get returned error: %v", err)
+	}
+
+	expected := &Variant{ID: 1}
+	if !reflect.DeepEqual(variant, expected) {
+		t.Errorf("Variant.Get returned %+v, expected %+v", variant, expected)
+	}
+}
