@@ -12,6 +12,7 @@ import (
 // See https://help.shopify.com/api/reference/product_variant
 type VariantService interface {
 	List(int, interface{}) ([]Variant, error)
+	Count(interface{}) (int, error)
 }
 
 // VariantServiceOp handles communication with the variant related methods of
