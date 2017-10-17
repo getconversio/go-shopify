@@ -70,7 +70,7 @@ func (s *VariantServiceOp) List(productID int, options interface{}) ([]Variant, 
 	return resource.Variants, err
 }
 
-// Count products
+// Count variants
 func (s *VariantServiceOp) Count(productID int, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/%d/variants/count.json", productsBasePath, productID)
 	return s.client.Count(path, options)
