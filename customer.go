@@ -2,6 +2,8 @@ package goshopify
 
 import (
 	"fmt"
+	"github.com/shopspring/decimal"
+	"time"
 )
 
 const customersBasePath = "admin/customers"
@@ -23,10 +25,23 @@ type CustomerServiceOp struct {
 
 // Customer represents a Shopify customer
 type Customer struct {
-	ID        int    `json:"id"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	ID                  int              `json:"id"`
+	Email               string           `json:"email"`
+	FirstName           string           `json:"first_name"`
+	LastName            string           `json:"last_name"`
+	State               string           `json:"state"`
+	Note                string           `json:"note"`
+	VerifiedEmail       bool             `json:"verified_email"`
+	MultipassIdentifier string           `json:"multipass_identifier"`
+	OrdersCount         int              `json:"orders_count"`
+	TaxExempt           bool             `json:"tax_exempt"`
+	TotalSpent          *decimal.Decimal `json:"total_spent"`
+	Phone               string           `json:"phone"`
+	Tags                string           `json:"tags"`
+	LastOrderId         int              `json:"last_order_id"`
+	AcceptsMarketing    bool             `json:"accepts_marketing"`
+	CreatedAt           time.Time        `json:"created_at"`
+	UpdatedAt           time.Time        `json:"updated_at"`
 }
 
 // Represents the result from the customers/X.json endpoint
