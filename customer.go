@@ -2,8 +2,9 @@ package goshopify
 
 import (
 	"fmt"
-	"github.com/shopspring/decimal"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 const customersBasePath = "admin/customers"
@@ -40,8 +41,8 @@ type Customer struct {
 	Tags                string           `json:"tags"`
 	LastOrderId         int              `json:"last_order_id"`
 	AcceptsMarketing    bool             `json:"accepts_marketing"`
-	CreatedAt           time.Time        `json:"created_at"`
-	UpdatedAt           time.Time        `json:"updated_at"`
+	CreatedAt           *time.Time       `json:"created_at"`
+	UpdatedAt           *time.Time       `json:"updated_at"`
 }
 
 // Represents the result from the customers/X.json endpoint
