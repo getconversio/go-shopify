@@ -116,6 +116,14 @@ func TestOrderGet(t *testing.T) {
 		t.Errorf("Order.List returned error: %v", err)
 	}
 
+	// Check that dates are parsed
+	timezone, _ := time.LoadLocation("America/New_York")
+
+	d := time.Date(2016, time.May, 17, 4, 14, 36, 0, timezone)
+	if !d.Equal(*order.CancelledAt) {
+		t.Errorf("Order.CancelledAt returned %+v, expected %+v", order.CancelledAt, d)
+	}
+
 	orderTests(t, *order)
 }
 

@@ -49,6 +49,7 @@ type Order struct {
 	Email                 string           `json:"email"`
 	CreatedAt             *time.Time       `json:"created_at"`
 	UpdatedAt             *time.Time       `json:"updated_at"`
+	CancelledAt           *time.Time       `json:"cancelled_at"`
 	ClosedAt              *time.Time       `json:"closed_at"`
 	ProcessedAt           *time.Time       `json:"processed_at"`
 	Customer              *Customer        `json:"customer"`
