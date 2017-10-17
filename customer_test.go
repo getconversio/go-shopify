@@ -91,8 +91,8 @@ func TestCustomerGet(t *testing.T) {
 		LastOrderId:      123,
 		Note:             "",
 		Phone:            "",
-		CreatedAt:        createdAt,
-		UpdatedAt:        updatedAt,
+		CreatedAt:        &createdAt,
+		UpdatedAt:        &updatedAt,
 	}
 
 	if customer.ID != expectation.ID {
@@ -110,10 +110,10 @@ func TestCustomerGet(t *testing.T) {
 	if customer.AcceptsMarketing != expectation.AcceptsMarketing {
 		t.Errorf("Customer.AcceptsMarketing returned %+v, expected %+v", customer.AcceptsMarketing, expectation.AcceptsMarketing)
 	}
-	if customer.CreatedAt.Equal(expectation.CreatedAt) {
+	if customer.CreatedAt.Equal(*expectation.CreatedAt) {
 		t.Errorf("Customer.CreatedAt returned %+v, expected %+v", customer.CreatedAt, expectation.CreatedAt)
 	}
-	if customer.UpdatedAt.Equal(expectation.UpdatedAt) {
+	if customer.UpdatedAt.Equal(*expectation.UpdatedAt) {
 		t.Errorf("Customer.UpdatedAt returned %+v, expected %+v", customer.UpdatedAt, expectation.UpdatedAt)
 	}
 	if customer.OrdersCount != expectation.OrdersCount {
