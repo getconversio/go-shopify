@@ -1,10 +1,12 @@
 package goshopify
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -28,7 +30,7 @@ func setup() {
 		Password:    "privateapppassword",
 	}
 	client = NewClient(app, "fooshop", "abcd")
-	httpmock.Activate()
+	httpmock.ActivateNonDefault(client.Client)
 }
 
 func teardown() {
@@ -257,6 +259,88 @@ func TestDo(t *testing.T) {
 		body := new(MyStruct)
 		req, _ := client.NewRequest("GET", c.url, nil, nil)
 		err := client.Do(req, body)
+
+		if err != nil {
+			if e, ok := err.(*url.Error); ok {
+				err = e.Err
+			} else if e, ok := err.(*json.SyntaxError); ok {
+				err = errors.New(e.Error())
+			}
+
+			if !reflect.DeepEqual(err, c.expected) {
+				t.Errorf("Do(): expected error %#v, actual %#v", c.expected, err)
+			}
+		} else if err == nil && !reflect.DeepEqual(body, c.expected) {
+			t.Errorf("Do(): expected %#v, actual %#v", c.expected, body)
+		}
+	}
+}
+
+func TestCustomHTTPClientDo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	type MyStruct struct {
+		Foo string `json:"foo"`
+	}
+
+	cases := []struct {
+		url       string
+		responder httpmock.Responder
+		expected  interface{}
+		client    *http.Client
+	}{
+		{
+			"foo/1",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			http.DefaultClient,
+		},
+		{
+			"foo/2",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			&http.Client{
+				Timeout: time.Second * 1,
+			},
+		},
+		{
+			"foo/3",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			&http.Client{
+				Timeout: time.Second * 1,
+				Transport: &http.Transport{
+					Dial: (&net.Dialer{
+						Timeout:   30 * time.Second,
+						KeepAlive: 30 * time.Second,
+					}).Dial,
+					TLSHandshakeTimeout:   10 * time.Second,
+					ResponseHeaderTimeout: 10 * time.Second,
+					ExpectContinueTimeout: 1 * time.Second,
+					TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+				},
+			},
+		},
+	}
+
+	for _, c := range cases {
+
+		client.Client = c.client
+		httpmock.ActivateNonDefault(client.Client)
+
+		shopUrl := fmt.Sprintf("https://fooshop.myshopify.com/%v", c.url)
+		httpmock.RegisterResponder("GET", shopUrl, c.responder)
+
+		body := new(MyStruct)
+		req, err := client.NewRequest("GET", c.url, nil, nil)
+		if err != nil {
+			t.Fatal(c.url, err)
+		}
+		err = client.Do(req, body)
+		if err != nil {
+			t.Fatal(c.url, err)
+		}
 
 		if err != nil {
 			if e, ok := err.(*url.Error); ok {
