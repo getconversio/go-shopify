@@ -18,6 +18,7 @@ type VariantService interface {
 	Get(int, interface{}) (*Variant, error)
 	Create(int, Variant) (*Variant, error)
 	Update(Variant) (*Variant, error)
+	Delete(int, int) error
 }
 
 // VariantServiceOp handles communication with the variant related methods of
@@ -102,4 +103,9 @@ func (s *VariantServiceOp) Update(variant Variant) (*Variant, error) {
 	resource := new(VariantResource)
 	err := s.client.Put(path, wrappedData, resource)
 	return resource.Variant, err
+}
+
+// Delete an existing product
+func (s *VariantServiceOp) Delete(productID int, variantID int) error {
+	return s.client.Delete(fmt.Sprintf("%s/%d/variants/%d.json", productsBasePath, productID, variantID))
 }
