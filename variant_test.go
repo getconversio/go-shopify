@@ -132,3 +132,16 @@ func TestVariantUpdate(t *testing.T) {
 	}
 	variantTests(t, *returnedVariant)
 }
+
+func TestVariantDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1/variants/1.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Variant.Delete(1, 1)
+	if err != nil {
+		t.Errorf("Variant.Delete returned error: %v", err)
+	}
+}
