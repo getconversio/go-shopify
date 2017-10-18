@@ -52,6 +52,7 @@ type Client struct {
 	Order    OrderService
 	Shop     ShopService
 	Webhook  WebhookService
+	Variant  VariantService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -151,6 +152,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Order = &OrderServiceOp{client: c}
 	c.Shop = &ShopServiceOp{client: c}
 	c.Webhook = &WebhookServiceOp{client: c}
+	c.Variant = &VariantServiceOp{client: c}
 
 	return c
 }
