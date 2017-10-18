@@ -5,8 +5,24 @@ import (
 	"testing"
 	"time"
 
+	"github.com/shopspring/decimal"
+
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
+
+func variantTests(t *testing.T, variant Variant) {
+	// Check that the ID is assigned to the returned variant
+	expectedInt := 1
+	if variant.ID != expectedInt {
+		t.Errorf("Variant.ID returned %+v, expected %+v", variant.ID, expectedInt)
+	}
+
+	// Check that the Title is assigned to the returned variant
+	expectedTitle := "Yellow"
+	if variant.Title != expectedTitle {
+		t.Errorf("Variant.Title returned %+v, expected %+v", variant.Title, expectedTitle)
+	}
+}
 
 func TestVariantList(t *testing.T) {
 	setup()
@@ -74,4 +90,24 @@ func TestVariantGet(t *testing.T) {
 	if !reflect.DeepEqual(variant, expected) {
 		t.Errorf("Variant.Get returned %+v, expected %+v", variant, expected)
 	}
+}
+
+func TestVariantCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products/1/variants.json",
+		httpmock.NewBytesResponder(200, loadFixture("variant.json")))
+
+	price := decimal.NewFromFloat(1)
+
+	variant := Variant{
+		Option1: "Yellow",
+		Price:   &price,
+	}
+	result, err := client.Variant.Create(1, variant)
+	if err != nil {
+		t.Errorf("Variant.Create returned error: %v", err)
+	}
+	variantTests(t, *result)
 }
