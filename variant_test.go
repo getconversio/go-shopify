@@ -111,3 +111,24 @@ func TestVariantCreate(t *testing.T) {
 	}
 	variantTests(t, *result)
 }
+
+func TestVariantUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/variants/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("variant.json")))
+
+	variant := Variant{
+		ID:      1,
+		Option1: "Green",
+	}
+
+	variant.Option1 = "Yellow"
+
+	returnedVariant, err := client.Variant.Update(variant)
+	if err != nil {
+		t.Errorf("Variant.Update returned error: %v", err)
+	}
+	variantTests(t, *returnedVariant)
+}
