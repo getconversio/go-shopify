@@ -17,6 +17,7 @@ type VariantService interface {
 	Count(int, interface{}) (int, error)
 	Get(int, interface{}) (*Variant, error)
 	Create(int, Variant) (*Variant, error)
+	Update(Variant) (*Variant, error)
 }
 
 // VariantServiceOp handles communication with the variant related methods of
@@ -91,5 +92,14 @@ func (s *VariantServiceOp) Create(productID int, variant Variant) (*Variant, err
 	wrappedData := VariantResource{Variant: &variant}
 	resource := new(VariantResource)
 	err := s.client.Post(path, wrappedData, resource)
+	return resource.Variant, err
+}
+
+// Update existing variant
+func (s *VariantServiceOp) Update(variant Variant) (*Variant, error) {
+	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variant.ID)
+	wrappedData := VariantResource{Variant: &variant}
+	resource := new(VariantResource)
+	err := s.client.Put(path, wrappedData, resource)
 	return resource.Variant, err
 }
