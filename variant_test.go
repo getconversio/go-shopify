@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
-	"github.com/shopspring/decimal"
 
+	"github.com/shopspring/decimal"
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
