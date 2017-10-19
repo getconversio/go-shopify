@@ -33,7 +33,7 @@ type App struct {
 // Client manages communication with the Shopify API.
 type Client struct {
 	// HTTP client used to communicate with the DO API.
-	client *http.Client
+	Client *http.Client
 
 	// App settings
 	app App
@@ -146,7 +146,7 @@ func NewClient(app App, shopName, token string) *Client {
 
 	baseURL, _ := url.Parse(ShopBaseUrl(shopName))
 
-	c := &Client{client: httpClient, app: app, baseURL: baseURL, token: token}
+	c := &Client{Client: httpClient, app: app, baseURL: baseURL, token: token}
 	c.Product = &ProductServiceOp{client: c}
 	c.Customer = &CustomerServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
@@ -161,7 +161,7 @@ func NewClient(app App, shopName, token string) *Client {
 // response. It does not make much sense to call Do without a prepared
 // interface instance.
 func (c *Client) Do(req *http.Request, v interface{}) error {
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
 	}

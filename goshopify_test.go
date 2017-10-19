@@ -1,10 +1,12 @@
 package goshopify
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -28,7 +30,7 @@ func setup() {
 		Password:    "privateapppassword",
 	}
 	client = NewClient(app, "fooshop", "abcd")
-	httpmock.Activate()
+	httpmock.ActivateNonDefault(client.Client)
 }
 
 func teardown() {
@@ -44,23 +46,23 @@ func loadFixture(filename string) []byte {
 }
 
 func TestNewClient(t *testing.T) {
-	c := NewClient(app, "fooshop", "abcd")
+	testClient := NewClient(app, "fooshop", "abcd")
 	expected := "https://fooshop.myshopify.com"
-	if c.baseURL.String() != expected {
-		t.Errorf("NewClient BaseURL = %v, expected %v", c.baseURL.String(), expected)
+	if testClient.baseURL.String() != expected {
+		t.Errorf("NewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
 	}
 }
 
 func TestNewClientWithNoToken(t *testing.T) {
-	c := NewClient(app, "fooshop", "")
+	testClient := NewClient(app, "fooshop", "")
 	expected := "https://fooshop.myshopify.com"
-	if c.baseURL.String() != expected {
-		t.Errorf("NewClient BaseURL = %v, expected %v", c.baseURL.String(), expected)
+	if testClient.baseURL.String() != expected {
+		t.Errorf("NewClient BaseURL = %v, expected %v", testClient.baseURL.String(), expected)
 	}
 }
 
 func TestNewRequest(t *testing.T) {
-	c := NewClient(app, "fooshop", "abcd")
+	testClient := NewClient(app, "fooshop", "abcd")
 
 	inURL, outURL := "foo?page=1", "https://fooshop.myshopify.com/foo?limit=10&page=1"
 	inBody := struct {
@@ -72,7 +74,7 @@ func TestNewRequest(t *testing.T) {
 		Limit int `url:"limit"`
 	}
 
-	req, err := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
+	req, err := testClient.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
 	if err != nil {
 		t.Fatalf("NewRequest(%v) err = %v, expected nil", inURL, err)
 	}
@@ -103,7 +105,7 @@ func TestNewRequest(t *testing.T) {
 }
 
 func TestNewRequestForPrivateApp(t *testing.T) {
-	c := NewClient(app, "fooshop", "")
+	testClient := NewClient(app, "fooshop", "")
 
 	inURL, outURL := "foo?page=1", "https://fooshop.myshopify.com/foo?limit=10&page=1"
 	inBody := struct {
@@ -115,7 +117,7 @@ func TestNewRequestForPrivateApp(t *testing.T) {
 		Limit int `url:"limit"`
 	}
 
-	req, err := c.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
+	req, err := testClient.NewRequest("GET", inURL, inBody, extraOptions{Limit: 10})
 	if err != nil {
 		t.Fatalf("NewRequest(%v) err = %v, expected nil", inURL, err)
 	}
@@ -160,9 +162,9 @@ func TestNewRequestForPrivateApp(t *testing.T) {
 }
 
 func TestNewRequestMissingToken(t *testing.T) {
-	c := NewClient(app, "fooshop", "")
+	testClient := NewClient(app, "fooshop", "")
 
-	req, _ := c.NewRequest("GET", "/foo", nil, nil)
+	req, _ := testClient.NewRequest("GET", "/foo", nil, nil)
 
 	// Test token is not attached to the request
 	token := req.Header["X-Shopify-Access-Token"]
@@ -172,7 +174,7 @@ func TestNewRequestMissingToken(t *testing.T) {
 }
 
 func TestNewRequestError(t *testing.T) {
-	client := NewClient(app, "fooshop", "abcd")
+	testClient := NewClient(app, "fooshop", "abcd")
 
 	cases := []struct {
 		method  string
@@ -187,7 +189,7 @@ func TestNewRequestError(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		_, err := client.NewRequest(c.method, c.inURL, c.body, c.options)
+		_, err := testClient.NewRequest(c.method, c.inURL, c.body, c.options)
 
 		if err == nil {
 			t.Errorf("NewRequest(%v, %v, %v, %v) err = %v, expected error", c.method, c.inURL, c.body, c.options, err)
@@ -257,6 +259,88 @@ func TestDo(t *testing.T) {
 		body := new(MyStruct)
 		req, _ := client.NewRequest("GET", c.url, nil, nil)
 		err := client.Do(req, body)
+
+		if err != nil {
+			if e, ok := err.(*url.Error); ok {
+				err = e.Err
+			} else if e, ok := err.(*json.SyntaxError); ok {
+				err = errors.New(e.Error())
+			}
+
+			if !reflect.DeepEqual(err, c.expected) {
+				t.Errorf("Do(): expected error %#v, actual %#v", c.expected, err)
+			}
+		} else if err == nil && !reflect.DeepEqual(body, c.expected) {
+			t.Errorf("Do(): expected %#v, actual %#v", c.expected, body)
+		}
+	}
+}
+
+func TestCustomHTTPClientDo(t *testing.T) {
+	setup()
+	defer teardown()
+
+	type MyStruct struct {
+		Foo string `json:"foo"`
+	}
+
+	cases := []struct {
+		url       string
+		responder httpmock.Responder
+		expected  interface{}
+		client    *http.Client
+	}{
+		{
+			"foo/1",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			http.DefaultClient,
+		},
+		{
+			"foo/2",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			&http.Client{
+				Timeout: time.Second * 1,
+			},
+		},
+		{
+			"foo/3",
+			httpmock.NewStringResponder(200, `{"foo": "bar"}`),
+			&MyStruct{Foo: "bar"},
+			&http.Client{
+				Timeout: time.Second * 1,
+				Transport: &http.Transport{
+					Dial: (&net.Dialer{
+						Timeout:   30 * time.Second,
+						KeepAlive: 30 * time.Second,
+					}).Dial,
+					TLSHandshakeTimeout:   10 * time.Second,
+					ResponseHeaderTimeout: 10 * time.Second,
+					ExpectContinueTimeout: 1 * time.Second,
+					TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+				},
+			},
+		},
+	}
+
+	for _, c := range cases {
+
+		client.Client = c.client
+		httpmock.ActivateNonDefault(client.Client)
+
+		shopUrl := fmt.Sprintf("https://fooshop.myshopify.com/%v", c.url)
+		httpmock.RegisterResponder("GET", shopUrl, c.responder)
+
+		body := new(MyStruct)
+		req, err := client.NewRequest("GET", c.url, nil, nil)
+		if err != nil {
+			t.Fatal(c.url, err)
+		}
+		err = client.Do(req, body)
+		if err != nil {
+			t.Fatal(c.url, err)
+		}
 
 		if err != nil {
 			if e, ok := err.(*url.Error); ok {
