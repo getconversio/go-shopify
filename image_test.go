@@ -120,3 +120,18 @@ func TestImageCount(t *testing.T) {
 		t.Errorf("Image.Count returned %d, expected %d", cnt, expected)
 	}
 }
+
+func TestImageGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/images/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("image.json")))
+
+	image, err := client.Image.Get(1, 1, nil)
+	if err != nil {
+		t.Errorf("Image.Get returned error: %v", err)
+	}
+
+	imageTests(t, *image)
+}
