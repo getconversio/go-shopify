@@ -135,3 +135,26 @@ func TestImageGet(t *testing.T) {
 
 	imageTests(t, *image)
 }
+
+func TestImageCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products/1/images.json",
+		httpmock.NewBytesResponder(200, loadFixture("image.json")))
+
+	variantIds := make([]int, 2)
+	variantIds[0] = 808950810
+	variantIds[1] = 808950811
+
+	image := Image{
+		Src:        "https://cdn.shopify.com/s/files/1/0006/9093/3842/products/ipod-nano.png?v=1500937783",
+		VariantIds: variantIds,
+	}
+	returnedImage, err := client.Image.Create(1, image)
+	if err != nil {
+		t.Errorf("Image.Create returned error %v", err)
+	}
+
+	imageTests(t, *returnedImage)
+}
