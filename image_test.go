@@ -88,3 +88,35 @@ func TestImageList(t *testing.T) {
 
 	imageTests(t, images[0])
 }
+
+func TestImageCount(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/images/count.json",
+		httpmock.NewStringResponder(200, `{"count": 2}`))
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/images/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
+		httpmock.NewStringResponder(200, `{"count": 1}`))
+
+	cnt, err := client.Image.Count(1, nil)
+	if err != nil {
+		t.Errorf("Image.Count returned error: %v", err)
+	}
+
+	expected := 2
+	if cnt != expected {
+		t.Errorf("Image.Count returned %d, expected %d", cnt, expected)
+	}
+
+	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	cnt, err = client.Image.Count(1, CountOptions{CreatedAtMin: date})
+	if err != nil {
+		t.Errorf("Image.Count returned %d, expected %d", cnt, expected)
+	}
+
+	expected = 1
+	if cnt != expected {
+		t.Errorf("Image.Count returned %d, expected %d", cnt, expected)
+	}
+}
