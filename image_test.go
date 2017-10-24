@@ -183,3 +183,16 @@ func TestImageUpdate(t *testing.T) {
 
 	imageTests(t, *returnedImage)
 }
+
+func TestImageDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1/images/1.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Image.Delete(1, 1)
+	if err != nil {
+		t.Errorf("Image.Delete returned error: %v", err)
+	}
+}
