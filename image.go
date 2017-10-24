@@ -77,10 +77,10 @@ func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*
 // If both Image.Filename and Image.Attachment are supplied,
 // then Image.Src is not needed.  And vice versa.
 //
-// If both Image.Attachment and Image.Src are provided, Shopify
-// will take the attachment.
+// If both Image.Attachment and Image.Src are provided,
+// Shopify will take the attachment.
 //
-//Shopify will accept an Image.Attachment without Image.Filename.
+//Shopify will accept Image.Attachment without Image.Filename.
 func (s *ImageServiceOp) Create(productID int, image Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
 	wrappedData := ImageResource{Image: &image}
