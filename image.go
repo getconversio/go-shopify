@@ -14,6 +14,7 @@ type ImageService interface {
 	Get(int, int, interface{}) (*Image, error)
 	Create(int, Image) (*Image, error)
 	Update(int, Image) (*Image, error)
+	Delete(int, int) error
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -97,4 +98,9 @@ func (s *ImageServiceOp) Update(productID int, image Image) (*Image, error) {
 	resource := new(ImageResource)
 	err := s.client.Put(path, wrappedData, resource)
 	return resource.Image, err
+}
+
+// Delete an existing image
+func (s *ImageServiceOp) Delete(productID int, imageID int) error {
+	return s.client.Delete(fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID))
 }
