@@ -11,6 +11,7 @@ import (
 type ImageService interface {
 	List(int, interface{}) ([]Image, error)
 	Count(int, interface{}) (int, error)
+	Get(int, int, interface{}) (*Image, error)
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -32,6 +33,11 @@ type Image struct {
 	VariantIds []int      `json:"variant_ids"`
 }
 
+// ImageResource represents the result form the products/X/images/Y.json endpoint
+type ImageResource struct {
+	Image *Image `json:"image"`
+}
+
 // ImagesResource represents the result from the products/X/images.json endpoint
 type ImagesResource struct {
 	Images []Image `json:"images"`
@@ -49,4 +55,12 @@ func (s *ImageServiceOp) List(productID int, options interface{}) ([]Image, erro
 func (s *ImageServiceOp) Count(productID int, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/%d/images/count.json", productsBasePath, productID)
 	return s.client.Count(path, options)
+}
+
+// Get individual image
+func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*Image, error) {
+	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID)
+	resource := new(ImageResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Image, err
 }
