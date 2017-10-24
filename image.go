@@ -10,6 +10,7 @@ import (
 // See https://help.shopify.com/api/reference/product_image
 type ImageService interface {
 	List(int, interface{}) ([]Image, error)
+	Count(int, interface{}) (int, error)
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -42,4 +43,10 @@ func (s *ImageServiceOp) List(productID int, options interface{}) ([]Image, erro
 	resource := new(ImagesResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Images, err
+}
+
+// Count images
+func (s *ImageServiceOp) Count(productID int, options interface{}) (int, error) {
+	path := fmt.Sprintf("%s/%d/images/count.json", productsBasePath, productID)
+	return s.client.Count(path, options)
 }
