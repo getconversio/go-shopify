@@ -1,7 +1,24 @@
 package goshopify
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
+// ImageService is an interface for interacting with the image endpoints
+// of the Shopify API.
+// See https://help.shopify.com/api/reference/product_image
+type ImageService interface {
+	List(int, interface{}) ([]Image, error)
+}
+
+// ImageServiceOp handles communication with the image related methods of
+// the Shopify API.
+type ImageServiceOp struct {
+	client *Client
+}
+
+// Image represents a Shopify product's image
 type Image struct {
 	ID         int        `json:"id"`
 	ProductID  int        `json:"product_id"`
@@ -12,4 +29,17 @@ type Image struct {
 	Height     int        `json:"height"`
 	Src        string     `json:"src"`
 	VariantIds []int      `json:"variant_ids"`
+}
+
+// ImagesResource represents the result from the products/X/images.json endpoint
+type ImagesResource struct {
+	Images []Image `json:"images"`
+}
+
+// List images
+func (s *ImageServiceOp) List(productID int, options interface{}) ([]Image, error) {
+	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
+	resource := new(ImagesResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Images, err
 }
