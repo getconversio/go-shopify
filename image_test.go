@@ -158,3 +158,28 @@ func TestImageCreate(t *testing.T) {
 
 	imageTests(t, *returnedImage)
 }
+
+func TestImageUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/1/images/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("image.json")))
+
+	// Take an existing image
+	variantIds := make([]int, 2)
+	variantIds[0] = 808950810
+	variantIds[1] = 457924702
+	existingImage := Image{
+		ID:         1,
+		VariantIds: variantIds,
+	}
+	// And update it
+	existingImage.VariantIds[1] = 808950811
+	returnedImage, err := client.Image.Update(1, existingImage)
+	if err != nil {
+		t.Errorf("Image.Update returned error %v", err)
+	}
+
+	imageTests(t, *returnedImage)
+}
