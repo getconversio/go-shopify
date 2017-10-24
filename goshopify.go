@@ -53,6 +53,7 @@ type Client struct {
 	Shop     ShopService
 	Webhook  WebhookService
 	Variant  VariantService
+	Image    ImageService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -153,6 +154,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Shop = &ShopServiceOp{client: c}
 	c.Webhook = &WebhookServiceOp{client: c}
 	c.Variant = &VariantServiceOp{client: c}
+	c.Image = &ImageServiceOp{client: c}
 
 	return c
 }
