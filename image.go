@@ -12,6 +12,7 @@ type ImageService interface {
 	List(int, interface{}) ([]Image, error)
 	Count(int, interface{}) (int, error)
 	Get(int, int, interface{}) (*Image, error)
+	Create(int, Image) (*Image, error)
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -20,7 +21,7 @@ type ImageServiceOp struct {
 	client *Client
 }
 
-// Image represents a Shopify product's image
+// Image represents a Shopify product's image.
 type Image struct {
 	ID         int        `json:"id"`
 	ProductID  int        `json:"product_id"`
@@ -29,7 +30,9 @@ type Image struct {
 	UpdatedAt  *time.Time `json:"updated_at"`
 	Width      int        `json:"width"`
 	Height     int        `json:"height"`
-	Src        string     `json:"src"`
+	Src        string     `json:"src,omitempty"`
+	Attachment string     `json:"attachment,omitempty"`
+	Filename   string     `json:"filename,omitempty"`
 	VariantIds []int      `json:"variant_ids"`
 }
 
@@ -62,5 +65,19 @@ func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*
 	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID)
 	resource := new(ImageResource)
 	err := s.client.Get(path, resource, options)
+	return resource.Image, err
+}
+
+// Create a new image
+// There are 2 methods of creating an image in Shopify:
+// 1. Src
+// 2. Filename and Attachment
+// If both Image.Filename and Image.Attachment are supplied,
+// then Image.Src is not needed.  And vice versa.
+func (s *ImageServiceOp) Create(productID int, image Image) (*Image, error) {
+	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
+	wrappedData := ImageResource{Image: &image}
+	resource := new(ImageResource)
+	err := s.client.Post(path, wrappedData, resource)
 	return resource.Image, err
 }
