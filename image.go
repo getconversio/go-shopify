@@ -13,6 +13,7 @@ type ImageService interface {
 	Count(int, interface{}) (int, error)
 	Get(int, int, interface{}) (*Image, error)
 	Create(int, Image) (*Image, error)
+	Update(int, Image) (*Image, error)
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -80,11 +81,20 @@ func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*
 // If both Image.Attachment and Image.Src are provided,
 // Shopify will take the attachment.
 //
-//Shopify will accept Image.Attachment without Image.Filename.
+// Shopify will accept Image.Attachment without Image.Filename.
 func (s *ImageServiceOp) Create(productID int, image Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
 	wrappedData := ImageResource{Image: &image}
 	resource := new(ImageResource)
 	err := s.client.Post(path, wrappedData, resource)
+	return resource.Image, err
+}
+
+// Update an existing image
+func (s *ImageServiceOp) Update(productID int, image Image) (*Image, error) {
+	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, image.ID)
+	wrappedData := ImageResource{Image: &image}
+	resource := new(ImageResource)
+	err := s.client.Put(path, wrappedData, resource)
 	return resource.Image, err
 }
