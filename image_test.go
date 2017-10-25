@@ -135,3 +135,64 @@ func TestImageGet(t *testing.T) {
 
 	imageTests(t, *image)
 }
+
+func TestImageCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products/1/images.json",
+		httpmock.NewBytesResponder(200, loadFixture("image.json")))
+
+	variantIds := make([]int, 2)
+	variantIds[0] = 808950810
+	variantIds[1] = 808950811
+
+	image := Image{
+		Src:        "https://cdn.shopify.com/s/files/1/0006/9093/3842/products/ipod-nano.png?v=1500937783",
+		VariantIds: variantIds,
+	}
+	returnedImage, err := client.Image.Create(1, image)
+	if err != nil {
+		t.Errorf("Image.Create returned error %v", err)
+	}
+
+	imageTests(t, *returnedImage)
+}
+
+func TestImageUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/1/images/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("image.json")))
+
+	// Take an existing image
+	variantIds := make([]int, 2)
+	variantIds[0] = 808950810
+	variantIds[1] = 457924702
+	existingImage := Image{
+		ID:         1,
+		VariantIds: variantIds,
+	}
+	// And update it
+	existingImage.VariantIds[1] = 808950811
+	returnedImage, err := client.Image.Update(1, existingImage)
+	if err != nil {
+		t.Errorf("Image.Update returned error %v", err)
+	}
+
+	imageTests(t, *returnedImage)
+}
+
+func TestImageDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1/images/1.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Image.Delete(1, 1)
+	if err != nil {
+		t.Errorf("Image.Delete returned error: %v", err)
+	}
+}
