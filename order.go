@@ -80,6 +80,11 @@ type Order struct {
 	LineItems             []LineItem       `json:"line_items"`
 	ShippingLines         []ShippingLines  `json:"shipping_lines"`
 	Transactions          []Transaction    `json:"transactions"`
+	AppID                 int              `json:"app_id"`
+	CustomerLocale        string           `json:"customer_locale"`
+	LandingSite           string           `json:"landing_site"`
+	ReferringSite         string           `json:"referring_site"`
+	SourceName            string           `json:"source_name"`
 }
 
 type Address struct {
