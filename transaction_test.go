@@ -175,3 +175,22 @@ func TestTransactionGet(t *testing.T) {
 
 	TransactionTests(t, *transaction)
 }
+
+func TestTransactionCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/transactions.json",
+		httpmock.NewBytesResponder(200, loadFixture("transaction.json")))
+
+	amount := decimal.NewFromFloat(409.94)
+
+	transaction := Transaction{
+		Amount: &amount,
+	}
+	result, err := client.Transaction.Create(1, transaction)
+	if err != nil {
+		t.Errorf("Transaction.Create returned error: %+v", err)
+	}
+	TransactionTests(t, *result)
+}

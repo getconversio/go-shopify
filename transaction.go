@@ -9,6 +9,7 @@ type TransactionService interface {
 	List(int, interface{}) ([]Transaction, error)
 	Count(int, interface{}) (int, error)
 	Get(int, int, interface{}) (*Transaction, error)
+	Create(int, Transaction) (*Transaction, error)
 }
 
 // TransactionServiceOp handles communication with the transaction related methods of the
@@ -46,5 +47,14 @@ func (s *TransactionServiceOp) Get(orderID int, transactionID int, options inter
 	path := fmt.Sprintf("%s/%d/transactions/%d.json", ordersBasePath, orderID, transactionID)
 	resource := new(TransactionResource)
 	err := s.client.Get(path, resource, options)
+	return resource.Transaction, err
+}
+
+// Create a new transaction
+func (s *TransactionServiceOp) Create(orderID int, transaction Transaction) (*Transaction, error) {
+	path := fmt.Sprintf("%s/%d/transactions.json", ordersBasePath, orderID)
+	wrappedData := TransactionResource{Transaction: &transaction}
+	resource := new(TransactionResource)
+	err := s.client.Post(path, wrappedData, resource)
 	return resource.Transaction, err
 }
