@@ -160,3 +160,18 @@ func TestTransactionCount(t *testing.T) {
 		t.Errorf("Transaction.Count returned %d, expected %d", cnt, expected)
 	}
 }
+
+func TestTransactionGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/1/transactions/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("transaction.json")))
+
+	transaction, err := client.Transaction.Get(1, 1, nil)
+	if err != nil {
+		t.Errorf("Transaction.Get returned error: %v", err)
+	}
+
+	TransactionTests(t, *transaction)
+}
