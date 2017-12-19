@@ -22,7 +22,7 @@ type TransactionResource struct {
 	Transaction *Transaction `json:"transaction"`
 }
 
-// TransactionsResource represents the result from the transactions.json endpoint
+// TransactionsResource represents the result from the orders/X/transactions.json endpoint
 type TransactionsResource struct {
 	Transactions []Transaction `json:"transactions"`
 }
