@@ -1,11 +1,20 @@
 package goshopify
 
 import (
+	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"time"
 )
 
-const webhooksBasePath = "admin/webhooks"
+const (
+	webhooksBasePath      = "admin/webhooks"
+	shopifyChecksumHeader = "X-Shopify-Hmac-Sha256"
+)
 
 // WebhookService is an interface for interfacing with the webhook endpoints of
 // the Shopify API.
@@ -17,6 +26,7 @@ type WebhookService interface {
 	Create(Webhook) (*Webhook, error)
 	Update(Webhook) (*Webhook, error)
 	Delete(int) error
+	Verify(*http.Request) bool
 }
 
 // WebhookServiceOp handles communication with the webhook-related methods of
@@ -96,4 +106,20 @@ func (s *WebhookServiceOp) Update(webhook Webhook) (*Webhook, error) {
 // Delete an existing webhooks
 func (s *WebhookServiceOp) Delete(ID int) error {
 	return s.client.Delete(fmt.Sprintf("%s/%d.json", webhooksBasePath, ID))
+}
+
+// Verify a webhook created through the Shopify API
+func (s *WebhookServiceOp) Verify(httpRequest *http.Request) bool {
+	shopifySha256 := httpRequest.Header.Get(shopifyChecksumHeader)
+	actualMac := []byte(shopifySha256)
+
+	shopifySecret := s.client.app.ApiSecret
+	mac := hmac.New(sha256.New, []byte(shopifySecret))
+	requestBody, _ := ioutil.ReadAll(httpRequest.Body)
+	httpRequest.Body = ioutil.NopCloser(bytes.NewBuffer(requestBody))
+	mac.Write(requestBody)
+	macSum := mac.Sum(nil)
+	expectedMac := []byte(base64.StdEncoding.EncodeToString(macSum))
+
+	return hmac.Equal(actualMac, expectedMac)
 }
