@@ -156,3 +156,24 @@ func TestWebhookDelete(t *testing.T) {
 		t.Errorf("Webhook.Delete returned error: %v", err)
 	}
 }
+
+func TestWebhookVerify(t *testing.T) {
+	setup()
+	defer teardown()
+
+	hmac := "hMTq0K2x7oyOjoBwGYeTj5oxfnaVYXzbanUG9aajpKI="
+	message := "my secret message"
+	sharedSecret := "ratz"
+	testClient := NewClient(App{ApiSecret:sharedSecret}, "", "")
+	req, err := testClient.NewRequest("GET", "", message, nil)
+	if err != nil {
+		t.Fatalf("Webhook.verify err = %v, expected true", err)
+	}
+	req.Header.Add("X-Shopify-Hmac-Sha256", hmac)
+
+	isValid := client.Webhook.Verify(req)
+
+	if !isValid {
+		t.Errorf("Webhook.verify could not verified message checksum")
+	}
+}
