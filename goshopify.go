@@ -47,13 +47,14 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Product  ProductService
-	Customer CustomerService
-	Order    OrderService
-	Shop     ShopService
-	Webhook  WebhookService
-	Variant  VariantService
-	Image    ImageService
+	Product     ProductService
+	Customer    CustomerService
+	Order       OrderService
+	Shop        ShopService
+	Webhook     WebhookService
+	Variant     VariantService
+	Image       ImageService
+	Transaction TransactionService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -155,6 +156,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Webhook = &WebhookServiceOp{client: c}
 	c.Variant = &VariantServiceOp{client: c}
 	c.Image = &ImageServiceOp{client: c}
+	c.Transaction = &TransactionServiceOp{client: c}
 
 	return c
 }
