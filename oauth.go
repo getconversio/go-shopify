@@ -5,7 +5,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"net/url"
+	"io/ioutil"
+	"bytes"
+	"encoding/base64"
+	"net/http"
 )
+
+const shopifyChecksumHeader = "X-Shopify-Hmac-Sha256"
 
 // Returns a Shopify oauth authorization url for the given shopname and state.
 //
@@ -70,4 +76,20 @@ func (app App) VerifyAuthorizationURL(u *url.URL) bool {
 	message := q.Encode()
 
 	return app.VerifyMessage(message, messageMAC)
+}
+
+// Verifies a webhook http request, sent by Shopify.
+// The body of the request is still readable after invoking the method.
+func (app App) VerifyWebhookRequest(httpRequest *http.Request) bool {
+	shopifySha256 := httpRequest.Header.Get(shopifyChecksumHeader)
+	actualMac := []byte(shopifySha256)
+
+	mac := hmac.New(sha256.New, []byte(app.ApiSecret))
+	requestBody, _ := ioutil.ReadAll(httpRequest.Body)
+	httpRequest.Body = ioutil.NopCloser(bytes.NewBuffer(requestBody))
+	mac.Write(requestBody)
+	macSum := mac.Sum(nil)
+	expectedMac := []byte(base64.StdEncoding.EncodeToString(macSum))
+
+	return hmac.Equal(actualMac, expectedMac)
 }
