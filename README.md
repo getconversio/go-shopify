@@ -164,11 +164,11 @@ func FetchWebhooks() ([]Webhook, error) {
 
 #### Webhooks verification
 
-In order to be sure that webhook being sent from ShopifyApi you could easily verified
-it with the `VerifyWebhookRequest` method under the oauth class.
+In order to be sure that a webhook is sent from ShopifyApi you could easily verify
+it with the `VerifyWebhookRequest` method.
 
 For example:
-```
+```go
 func ValidateWebhook(httpRequest *http.Request) (bool) {
     shopifyApp := goshopify.App{ApiSecret: "ratz"}
     return shopifyApp.VerifyWebhookRequest(httpRequest)
