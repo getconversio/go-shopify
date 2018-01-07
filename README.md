@@ -162,6 +162,19 @@ func FetchWebhooks() ([]Webhook, error) {
 }
 ```
 
+#### Webhooks verification
+
+In order to be sure that webhook being sent from ShopifyApi you could easily verified
+it with the `VerifyWebhookRequest` method under the oauth class.
+
+For example:
+```
+func ValidateWebhook(httpRequest *http.Request) (bool) {
+    shopifyApp := goshopify.App{ApiSecret: "ratz"}
+    return shopifyApp.VerifyWebhookRequest(httpRequest)
+}
+```
+
 ## Develop and test
 
 There's nothing special to note about the tests except that if you have Docker

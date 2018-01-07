@@ -69,3 +69,24 @@ func TestAppVerifyAuthorizationURL(t *testing.T) {
 		}
 	}
 }
+
+
+func TestVerifyWebhookRequest(t *testing.T) {
+	setup()
+	defer teardown()
+
+	hmac := "hMTq0K2x7oyOjoBwGYeTj5oxfnaVYXzbanUG9aajpKI="
+	message := "my secret message"
+	testClient := NewClient(App{}, "", "")
+	req, err := testClient.NewRequest("GET", "", message, nil)
+	if err != nil {
+		t.Fatalf("Webhook.verify err = %v, expected true", err)
+	}
+	req.Header.Add("X-Shopify-Hmac-Sha256", hmac)
+
+	isValid := app.VerifyWebhookRequest(req)
+
+	if !isValid {
+		t.Errorf("Webhook.verify could not verified message checksum")
+	}
+}
