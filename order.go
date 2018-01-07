@@ -66,6 +66,7 @@ type Order struct {
 	TaxLines              []TaxLine        `json:"tax_lines"`
 	TotalWeight           int              `json:"total_weight"`
 	FinancialStatus       string           `json:"financial_status"`
+	Fulfillments          []Fulfillment    `json:"fulfillments"`
 	FulfillmentStatus     string           `json:"fulfillment_status"`
 	Token                 string           `json:"token"`
 	CartToken             string           `json:"cart_token"`
@@ -114,19 +115,30 @@ type DiscountCode struct {
 }
 
 type LineItem struct {
-	ID            int              `json:"id"`
-	ProductID     int              `json:"product_id"`
-	VariantID     int              `json:"variant_id"`
-	Quantity      int              `json:"quantity"`
-	Price         *decimal.Decimal `json:"price"`
-	TotalDiscount *decimal.Decimal `json:"total_discount"`
-	Title         string           `json:"title"`
-	VariantTitle  string           `json:"variant_title"`
-	Name          string           `json:"name"`
-	SKU           string           `json:"sku"`
-	Vendor        string           `json:"vendor"`
-	GiftCard      bool             `json:"gift_card"`
-	Taxable       bool             `json:"taxable"`
+	ID                         int              `json:"id"`
+	ProductID                  int              `json:"product_id"`
+	VariantID                  int              `json:"variant_id"`
+	Quantity                   int              `json:"quantity"`
+	Price                      *decimal.Decimal `json:"price"`
+	TotalDiscount              *decimal.Decimal `json:"total_discount"`
+	Title                      string           `json:"title"`
+	VariantTitle               string           `json:"variant_title"`
+	Name                       string           `json:"name"`
+	SKU                        string           `json:"sku"`
+	Vendor                     string           `json:"vendor"`
+	GiftCard                   bool             `json:"gift_card"`
+	Taxable                    bool             `json:"taxable"`
+	FulfillmentService         string           `json:"fulfillment_service"`
+	RequiresShipping           bool             `json:"requires_shipping"`
+	VariantInventoryManagement string           `json:"variant_inventory_management"`
+	Properties                 []NoteAttribute  `json:"properties"`
+	ProductExists              bool             `json:"product_exists"`
+	FulfillableQuantity        int              `json:"fulfillable_quantity"`
+	Grams                      int              `json:"grams"`
+	FulfillmentStatus          string           `json:"fulfillment_status"`
+	TaxLines                   []TaxLine        `json:"tax_lines"`
+	OriginLocation             Address          `json:"origin_location"`
+	DestinationLocation        Address          `json:"destination_location"`
 }
 
 type LineItemProperty struct {
@@ -194,6 +206,28 @@ type Transaction struct {
 	ErrorCode      string           `json:"error_code"`
 	SourceName     string           `json:"source_name"`
 	PaymentDetails *PaymentDetails  `json:"payment_details"`
+}
+
+type Fulfillment struct {
+	ID              int        `json:"id"`
+	OrderID         int        `json:"order_id"`
+	Status          string     `json:"status"`
+	CreatedAt       *time.Time `json:"created_at"`
+	Service         string     `json:"service"`
+	UpdatedAt       *time.Time `json:"updated_at"`
+	TrackingCompany string     `json:"tracking_company"`
+	ShipmentStatus  string     `json:"shipment_status"`
+	TrackingNumber  string     `json:"tracking_number"`
+	TrackingNumbers []string   `json:"tracking_numbers"`
+	TrackingUrl     string     `json:"tracking_url"`
+	TrackingUrls    []string   `json:"tracking_urls"`
+	Receipt         Receipt    `json:"receipt"`
+	LineItems       []LineItem `json:"line_items"`
+}
+
+type Receipt struct {
+	TestCase      bool   `json:"testcase"`
+	Authorization string `json:"authorization"`
 }
 
 // List orders
