@@ -283,6 +283,7 @@ type ListOptions struct {
 	UpdatedAtMin time.Time `url:"updated_at_min,omitempty"`
 	UpdatedAtMax time.Time `url:"updated_at_max,omitempty"`
 	Order        string    `url:"order,omitempty"`
+	Fields       string    `url:"fields,omitempty"`
 }
 
 // General count options that can be used for most collection counts.
