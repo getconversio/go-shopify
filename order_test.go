@@ -82,13 +82,14 @@ func TestOrderListOptions(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders.json?limit=250&page=10&status=any",
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders.json?fields=id%2Cname&limit=250&page=10&status=any",
 		httpmock.NewBytesResponder(200, loadFixture("orders.json")))
 
 	options := OrderListOptions{
 		Page:   10,
 		Limit:  250,
-		Status: "any"}
+		Status: "any",
+		Fields: "id,name"}
 
 	orders, err := client.Order.List(options)
 	if err != nil {
