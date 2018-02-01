@@ -87,6 +87,14 @@ type Order struct {
 	LandingSite           string           `json:"landing_site"`
 	ReferringSite         string           `json:"referring_site"`
 	SourceName            string           `json:"source_name"`
+	ClientDetails         *ClientDetails   `json:"client_details"`
+	Tags                  string           `json:"tags"`
+	LocationId            int              `json:"location_id"`
+	PaymentGatewayNames   []string         `json:"payment_gateway_names"`
+	ProcessingMethod      string           `json:"processing_method"`
+	Refunds               []Refund         `json:"refunds"`
+	UserId                int              `json:"user_id"`
+	OrderStatusUrl        string           `json:"order_status_url"`
 }
 
 type Address struct {
@@ -137,8 +145,8 @@ type LineItem struct {
 	Grams                      int              `json:"grams"`
 	FulfillmentStatus          string           `json:"fulfillment_status"`
 	TaxLines                   []TaxLine        `json:"tax_lines"`
-	OriginLocation             Address          `json:"origin_location"`
-	DestinationLocation        Address          `json:"destination_location"`
+	OriginLocation             *Address         `json:"origin_location"`
+	DestinationLocation        *Address         `json:"destination_location"`
 }
 
 type LineItemProperty struct {
@@ -228,6 +236,33 @@ type Fulfillment struct {
 type Receipt struct {
 	TestCase      bool   `json:"testcase"`
 	Authorization string `json:"authorization"`
+}
+
+type ClientDetails struct {
+	AcceptLanguage string `json:"accept_language"`
+	BrowserHeight  int    `json:"browser_height"`
+	BrowserIp      string `json:"browser_ip"`
+	BrowserWidth   int    `json:"browser_width"`
+	SessionHash    string `json:"session_hash"`
+	UserAgent      string `json:"user_agent"`
+}
+
+type Refund struct {
+	Id              int              `json:"id"`
+	OrderId         int              `json:"order_id"`
+	CreatedAt       *time.Time       `json:"created_at"`
+	Note            string           `json:"note"`
+	Restock         bool             `json:"restock"`
+	UserId          int              `json:"user_id"`
+	RefundLineItems []RefundLineItem `json:"refund_line_items"`
+	Transactions    []Transaction    `json:"transactions"`
+}
+
+type RefundLineItem struct {
+	Id         int       `json:"id"`
+	Quantity   int       `json:"quantity"`
+	LineItemId int       `json:"line_item_id"`
+	LineItem   *LineItem `json:"line_item"`
 }
 
 // List orders

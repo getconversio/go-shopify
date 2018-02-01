@@ -27,21 +27,24 @@ type ProductServiceOp struct {
 
 // Product represents a Shopify product
 type Product struct {
-	ID             int             `json:"id"`
-	Title          string          `json:"title"`
-	BodyHTML       string          `json:"body_html"`
-	Vendor         string          `json:"vendor"`
-	ProductType    string          `json:"product_type"`
-	Handle         string          `json:"handle"`
-	CreatedAt      *time.Time      `json:"created_at"`
-	UpdatedAt      *time.Time      `json:"updated_at"`
-	PublishedAt    *time.Time      `json:"published_at"`
-	PublishedScope string          `json:"published_scope"`
-	Tags           string          `json:"tags"`
-	Options        []ProductOption `json:"options"`
-	Variants       []Variant       `json:"variants"`
-	Image          Image           `json:"image"`
-	Images         []Image         `json:"images"`
+	ID                             int             `json:"id"`
+	Title                          string          `json:"title"`
+	BodyHTML                       string          `json:"body_html"`
+	Vendor                         string          `json:"vendor"`
+	ProductType                    string          `json:"product_type"`
+	Handle                         string          `json:"handle"`
+	CreatedAt                      *time.Time      `json:"created_at"`
+	UpdatedAt                      *time.Time      `json:"updated_at"`
+	PublishedAt                    *time.Time      `json:"published_at"`
+	PublishedScope                 string          `json:"published_scope"`
+	Tags                           string          `json:"tags"`
+	Options                        []ProductOption `json:"options"`
+	Variants                       []Variant       `json:"variants"`
+	Image                          Image           `json:"image"`
+	Images                         []Image         `json:"images"`
+	TemplateSuffix                 string          `json:"template_suffix"`
+	MetafieldsGlobalTitleTag       string          `json:"metafields_global_title_tag"`
+	MetafieldsGlobalDescriptionTag string          `json:"metafields_global_description_tag"`
 }
 
 // The options provided by Shopify
