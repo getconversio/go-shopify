@@ -90,7 +90,7 @@ func (s *CustomCollectionServiceOp) Update(collectionID int, collection CustomCo
 	return resource.Collection, err
 }
 
-// Delete an existing image
+// Delete an existing custom collection.
 func (s *CustomCollectionServiceOp) Delete(collectionID int) error {
 	return s.client.Delete(fmt.Sprintf("%s/%d.json", customCollectionsBasePath, collectionID))
 }
