@@ -129,7 +129,7 @@ func TestCustomCollectionUpdate(t *testing.T) {
 		Title: "Macbooks",
 	}
 
-	returnedCollection, err := client.CustomCollection.Update(collection.ID, collection)
+	returnedCollection, err := client.CustomCollection.Update(collection)
 	if err != nil {
 		t.Errorf("CustomCollection.Update returned error: %v", err)
 	}

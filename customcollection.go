@@ -14,7 +14,7 @@ type CustomCollectionService interface {
 	Count(interface{}) (int, error)
 	Get(int, interface{}) (*CustomCollection, error)
 	Create(CustomCollection) (*CustomCollection, error)
-	Update(int, CustomCollection) (*CustomCollection, error)
+	Update(CustomCollection) (*CustomCollection, error)
 	Delete(int) error
 }
 
@@ -82,8 +82,8 @@ func (s *CustomCollectionServiceOp) Create(collection CustomCollection) (*Custom
 }
 
 // Update an existing custom collection
-func (s *CustomCollectionServiceOp) Update(collectionID int, collection CustomCollection) (*CustomCollection, error) {
-	path := fmt.Sprintf("%s/%d.json", customCollectionsBasePath, collectionID)
+func (s *CustomCollectionServiceOp) Update(collection CustomCollection) (*CustomCollection, error) {
+	path := fmt.Sprintf("%s/%d.json", customCollectionsBasePath, collection.ID)
 	wrappedData := CustomCollectionResource{Collection: &collection}
 	resource := new(CustomCollectionResource)
 	err := s.client.Put(path, wrappedData, resource)
