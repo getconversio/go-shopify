@@ -2,6 +2,7 @@ package goshopify
 
 import (
 	"fmt"
+	"time"
 )
 
 const customCollectionsBasePath = "admin/custom_collections"
@@ -26,17 +27,17 @@ type CustomCollectionServiceOp struct {
 
 // CustomCollection represents a Shopify custom collection.
 type CustomCollection struct {
-	ID             int    `json:"id"`
-	Handle         string `json:"handle"`
-	Title          string `json:"title"`
-	UpdatedAt      string `json:"updated_at"`
-	BodyHTML       string `json:"body_html"`
-	SortOrder      string `json:"sort_order"`
-	TemplateSuffix string `json:"template_suffix"`
-	Image          Image  `json:"image"`
-	Published      bool   `json:"published"`
-	PublishedAt    string `json:"published_at"`
-	PublishedScope string `json:"published_scope"`
+	ID             int        `json:"id"`
+	Handle         string     `json:"handle"`
+	Title          string     `json:"title"`
+	UpdatedAt      *time.Time `json:"updated_at"`
+	BodyHTML       string     `json:"body_html"`
+	SortOrder      string     `json:"sort_order"`
+	TemplateSuffix string     `json:"template_suffix"`
+	Image          Image      `json:"image"`
+	Published      bool       `json:"published"`
+	PublishedAt    *time.Time `json:"published_at"`
+	PublishedScope string     `json:"published_scope"`
 }
 
 // CustomCollectionResource represents the result form the custom_collections/X.json endpoint
