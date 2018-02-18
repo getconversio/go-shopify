@@ -65,7 +65,7 @@ func (app App) VerifyMessage(message, messageMAC string) bool {
 }
 
 // Verifying URL callback parameters.
-func (app App) VerifyAuthorizationURL(u *url.URL) bool {
+func (app App) VerifyAuthorizationURL(u *url.URL) (bool, error) {
 	q := u.Query()
 	messageMAC := q.Get("hmac")
 
@@ -73,9 +73,9 @@ func (app App) VerifyAuthorizationURL(u *url.URL) bool {
 	q.Del("hmac")
 	q.Del("signature")
 
-	message := q.Encode()
+	message, err := url.QueryUnescape(q.Encode())
 
-	return app.VerifyMessage(message, messageMAC)
+	return app.VerifyMessage(message, messageMAC), err
 }
 
 // Verifies a webhook http request, sent by Shopify.

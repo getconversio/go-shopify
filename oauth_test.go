@@ -63,13 +63,15 @@ func TestAppVerifyAuthorizationURL(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		actual := app.VerifyAuthorizationURL(c.u)
+		actual, err := app.VerifyAuthorizationURL(c.u)
+		if err != nil {
+			t.Errorf("App.VerifyAuthorizationURL(..., %s) returned an error:", c.u, err)
+		}
 		if actual != c.expected {
 			t.Errorf("App.VerifyAuthorizationURL(..., %s): expected %v, actual %v", c.u, c.expected, actual)
 		}
 	}
 }
-
 
 func TestVerifyWebhookRequest(t *testing.T) {
 	setup()
