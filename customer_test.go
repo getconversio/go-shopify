@@ -122,7 +122,7 @@ func TestCustomerGet(t *testing.T) {
 	if customer.State != expectation.State {
 		t.Errorf("Customer.State returned %+v, expected %+v", customer.State, expectation.State)
 	}
-	if !expectation.TotalSpent.Equals(*customer.TotalSpent) {
+	if !expectation.TotalSpent.Truncate(2).Equals(customer.TotalSpent.Truncate(2)) {
 		t.Errorf("Customer.TotalSpent returned %+v, expected %+v", customer.TotalSpent, expectation.TotalSpent)
 	}
 	if customer.LastOrderId != expectation.LastOrderId {
