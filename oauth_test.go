@@ -65,7 +65,7 @@ func TestAppVerifyAuthorizationURL(t *testing.T) {
 	for _, c := range cases {
 		actual, err := app.VerifyAuthorizationURL(c.u)
 		if err != nil {
-			t.Errorf("App.VerifyAuthorizationURL(..., %s) returned an error:", c.u, err)
+			t.Errorf("App.VerifyAuthorizationURL(..., %s) returned an error: %v", c.u, err)
 		}
 		if actual != c.expected {
 			t.Errorf("App.VerifyAuthorizationURL(..., %s): expected %v, actual %v", c.u, c.expected, actual)
@@ -89,6 +89,6 @@ func TestVerifyWebhookRequest(t *testing.T) {
 	isValid := app.VerifyWebhookRequest(req)
 
 	if !isValid {
-		t.Errorf("Webhook.verify could not verified message checksum")
+		t.Error("Webhook.verify could not verified message checksum")
 	}
 }

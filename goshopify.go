@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/google/go-querystring/query"
+	"io"
 )
 
 const (
@@ -197,6 +198,9 @@ func wrapSpecificError(r *http.Response, err ResponseError) error {
 			RetryAfter:    int(f),
 		}
 	}
+	if err.Status == 406 {
+		err.Message = "Not acceptable"
+	}
 	return err
 }
 
@@ -213,7 +217,12 @@ func CheckResponseError(r *http.Response) error {
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&shopifyError)
-	if err != nil {
+	switch {
+	case err == io.EOF:
+		// empty body, this probably means shopify returned an error with no body
+		// we'll handle that error in wrapSpecificError()
+	case err != nil:
+		// other error
 		return err
 	}
 
