@@ -56,6 +56,8 @@ type Client struct {
 	Variant          VariantService
 	Image            ImageService
 	Transaction      TransactionService
+	Theme            ThemeService
+	Asset            AssetService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -159,6 +161,8 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Variant = &VariantServiceOp{client: c}
 	c.Image = &ImageServiceOp{client: c}
 	c.Transaction = &TransactionServiceOp{client: c}
+	c.Theme = &ThemeServiceOp{client: c}
+	c.Asset = &AssetServiceOp{client: c}
 
 	return c
 }
