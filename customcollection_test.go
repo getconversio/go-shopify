@@ -8,7 +8,7 @@ import (
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
-func collectionTests(t *testing.T, collection CustomCollection) {
+func customCollectionTests(t *testing.T, collection CustomCollection) {
 
 	// Test a few fields
 	cases := []struct {
@@ -114,7 +114,7 @@ func TestCustomCollectionCreate(t *testing.T) {
 		t.Errorf("CustomCollection.Create returned error: %v", err)
 	}
 
-	collectionTests(t, *returnedCollection)
+	customCollectionTests(t, *returnedCollection)
 }
 
 func TestCustomCollectionUpdate(t *testing.T) {
@@ -134,7 +134,7 @@ func TestCustomCollectionUpdate(t *testing.T) {
 		t.Errorf("CustomCollection.Update returned error: %v", err)
 	}
 
-	collectionTests(t, *returnedCollection)
+	customCollectionTests(t, *returnedCollection)
 }
 
 func TestCustomCollectionDelete(t *testing.T) {
