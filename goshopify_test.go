@@ -250,6 +250,14 @@ func TestDo(t *testing.T) {
 				},
 			},
 		},
+		{
+			"foo/7",
+			httpmock.NewStringResponder(406, ``),
+			ResponseError{
+				Status:  406,
+				Message: "Not acceptable",
+			},
+		},
 	}
 
 	for _, c := range cases {
