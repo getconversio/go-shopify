@@ -16,6 +16,7 @@ type CustomerService interface {
 	List(interface{}) ([]Customer, error)
 	Count(interface{}) (int, error)
 	Get(int, interface{}) (*Customer, error)
+	Search(interface{}) ([]Customer, error)
 }
 
 // CustomerServiceOp handles communication with the product related methods of
@@ -75,4 +76,12 @@ func (s *CustomerServiceOp) Get(customerID int, options interface{}) (*Customer,
 	resource := new(CustomerResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Customer, err
+}
+
+// Search customers
+func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
+	path := fmt.Sprintf("%s/search.json", customersBasePath)
+	resource := new(CustomersResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Customers, err
 }

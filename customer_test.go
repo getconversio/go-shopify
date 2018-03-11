@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
-	"gopkg.in/jarcoal/httpmock.v1"
+	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
 func TestCustomerList(t *testing.T) {
@@ -56,6 +56,24 @@ func TestCustomerCount(t *testing.T) {
 	expected = 2
 	if cnt != expected {
 		t.Errorf("Customer.Count returned %d, expected %d", cnt, expected)
+	}
+}
+
+func TestCustomerSearch(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/customers/search.json",
+		httpmock.NewStringResponder(200, `{"customers": [{"id":1},{"id":2}]}`))
+
+	customers, err := client.Customer.Search(nil)
+	if err != nil {
+		t.Errorf("Customer.Search returned error: %v", err)
+	}
+
+	expected := []Customer{{ID: 1}, {ID: 2}}
+	if !reflect.DeepEqual(customers, expected) {
+		t.Errorf("Customer.Search returned %+v, expected %+v", customers, expected)
 	}
 }
 
