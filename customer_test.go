@@ -159,3 +159,26 @@ func TestCustomerGet(t *testing.T) {
 		t.Errorf("Customer.Phone returned %+v, expected %+v", customer.Phone, expectation.Phone)
 	}
 }
+
+func TestCustomerUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/customers/1.json",
+		httpmock.NewBytesResponder(200, loadFixture("customer.json")))
+
+	customer := Customer{
+		ID:   1,
+		Tags: "new",
+	}
+
+	returnedCustomer, err := client.Customer.Update(customer)
+	if err != nil {
+		t.Errorf("Customer.Update returned error: %v", err)
+	}
+
+	expectedCustomerID := 1
+	if returnedCustomer.ID != expectedCustomerID {
+		t.Errorf("Customer.ID returned %+v expected %+v", returnedCustomer.ID, expectedCustomerID)
+	}
+}
