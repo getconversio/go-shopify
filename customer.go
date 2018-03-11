@@ -56,6 +56,15 @@ type CustomersResource struct {
 	Customers []Customer `json:"customers"`
 }
 
+// Represents the options available when searching for a customer
+type CustomerSearchOptions struct {
+	Page   int    `url:"page,omitempty"`
+	Limit  int    `url:"limit,omitempty"`
+	Fields string `url:"fields,omitempty"`
+	Order  string `url:"order,omitempty"`
+	Query  string `url:"query,omitempty"`
+}
+
 // List customers
 func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s.json", customersBasePath)
