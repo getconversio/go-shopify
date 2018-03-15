@@ -50,6 +50,7 @@ type Client struct {
 	// Services used for communicating with the API
 	Product          ProductService
 	CustomCollection CustomCollectionService
+	SmartCollection  SmartCollectionService
 	Customer         CustomerService
 	Order            OrderService
 	Shop             ShopService
@@ -155,6 +156,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c := &Client{Client: httpClient, app: app, baseURL: baseURL, token: token}
 	c.Product = &ProductServiceOp{client: c}
 	c.CustomCollection = &CustomCollectionServiceOp{client: c}
+	c.SmartCollection = &SmartCollectionServiceOp{client: c}
 	c.Customer = &CustomerServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
 	c.Shop = &ShopServiceOp{client: c}
