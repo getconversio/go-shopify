@@ -16,6 +16,8 @@ type CustomerService interface {
 	List(interface{}) ([]Customer, error)
 	Count(interface{}) (int, error)
 	Get(int, interface{}) (*Customer, error)
+	Search(interface{}) ([]Customer, error)
+	Update(Customer) (*Customer, error)
 }
 
 // CustomerServiceOp handles communication with the product related methods of
@@ -55,6 +57,15 @@ type CustomersResource struct {
 	Customers []Customer `json:"customers"`
 }
 
+// Represents the options available when searching for a customer
+type CustomerSearchOptions struct {
+	Page   int    `url:"page,omitempty"`
+	Limit  int    `url:"limit,omitempty"`
+	Fields string `url:"fields,omitempty"`
+	Order  string `url:"order,omitempty"`
+	Query  string `url:"query,omitempty"`
+}
+
 // List customers
 func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s.json", customersBasePath)
@@ -75,4 +86,21 @@ func (s *CustomerServiceOp) Get(customerID int, options interface{}) (*Customer,
 	resource := new(CustomerResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Customer, err
+}
+
+// Update an existing customer
+func (s *CustomerServiceOp) Update(customer Customer) (*Customer, error) {
+	path := fmt.Sprintf("%s/%d.json", customersBasePath, customer.ID)
+	wrappedData := CustomerResource{Customer: &customer}
+	resource := new(CustomerResource)
+	err := s.client.Put(path, wrappedData, resource)
+	return resource.Customer, err
+}
+
+// Search customers
+func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
+	path := fmt.Sprintf("%s/search.json", customersBasePath)
+	resource := new(CustomersResource)
+	err := s.client.Get(path, resource, options)
+	return resource.Customers, err
 }
