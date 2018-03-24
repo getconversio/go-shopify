@@ -29,9 +29,9 @@ type RecurringApplicationChargeServiceOp struct {
 // RecurringApplicationCharge represents a Shopify recurringApplicationCharge
 type RecurringApplicationCharge struct {
 	ID                  int              `json:"id"`
-	ActivatedOn         *time.Time       `json:"activated_on"`
-	BillingOn         	*time.Time       `json:"billing_on"`
-	CancelledOn         *time.Time       `json:"cancelled_on"`
+	ActivatedOn         string	         `json:"activated_on"`
+	BillingOn         	string	         `json:"billing_on"`
+	CancelledOn         string	         `json:"cancelled_on"`
 	CappedAmount        *decimal.Decimal `json:"capped_amount"`
 	ConfirmationUrl     string           `json:"confirmation_url"`
 	Name     			string           `json:"name"`
@@ -41,7 +41,7 @@ type RecurringApplicationCharge struct {
 	Terms			    string           `json:"terms"`
 	Test	            bool             `json:"test"`
 	TrialDays           int              `json:"trial_days"`
-	TrialEndsOn         *time.Time       `json:"trial_ends_on"`
+	TrialEndsOn         string	         `json:"trial_ends_on"`
 	CreatedAt           *time.Time       `json:"created_at"`
 	UpdatedAt           *time.Time       `json:"updated_at"`
 }
