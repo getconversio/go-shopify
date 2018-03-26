@@ -49,6 +49,7 @@ type Client struct {
 
 	// Services used for communicating with the API
 	Product          			ProductService
+	ScriptTag					ScriptTagService
 	CustomCollection 			CustomCollectionService
 	SmartCollection  			SmartCollectionService
 	RecurringApplicationCharge 	RecurringApplicationChargeService
@@ -156,6 +157,7 @@ func NewClient(app App, shopName, token string) *Client {
 
 	c := &Client{Client: httpClient, app: app, baseURL: baseURL, token: token}
 	c.Product = &ProductServiceOp{client: c}
+	c.ScriptTag = &ScriptTagServiceOp{client: c}
 	c.CustomCollection = &CustomCollectionServiceOp{client: c}
 	c.SmartCollection = &SmartCollectionServiceOp{client: c}
 	c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
