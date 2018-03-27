@@ -13,8 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-querystring/query"
 	"io"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -51,6 +52,7 @@ type Client struct {
 	Product          ProductService
 	CustomCollection CustomCollectionService
 	Customer         CustomerService
+	Checkout         CheckoutService
 	Order            OrderService
 	Shop             ShopService
 	Webhook          WebhookService
@@ -156,6 +158,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Product = &ProductServiceOp{client: c}
 	c.CustomCollection = &CustomCollectionServiceOp{client: c}
 	c.Customer = &CustomerServiceOp{client: c}
+	c.Checkout = &CheckoutServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
 	c.Shop = &ShopServiceOp{client: c}
 	c.Webhook = &WebhookServiceOp{client: c}
