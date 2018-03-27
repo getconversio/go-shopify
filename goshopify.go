@@ -275,6 +275,7 @@ func CheckResponseError(r *http.Response) error {
 			// Check to make sure the interface is a slice
 			// json always serializes JSON arrays into []interface{}
 			if reflect.TypeOf(v).Kind() == reflect.Slice {
+
 				for _, elem := range v.([]interface{}) {
 					// If the primary message of the response error is not set, use
 					// any message.
@@ -284,6 +285,9 @@ func CheckResponseError(r *http.Response) error {
 					topicAndElem := fmt.Sprintf("%v: %v", k, elem)
 					responseError.Errors = append(responseError.Errors, topicAndElem)
 				}
+			} else if reflect.TypeOf(v).Kind() == reflect.String {
+				topicAndElem := fmt.Sprintf("%v: %v", k, v)
+				responseError.Errors = append(responseError.Errors, topicAndElem)
 			}
 		}
 	}
