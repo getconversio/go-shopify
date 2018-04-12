@@ -21,9 +21,11 @@ type Shop struct {
 	Name                    string     `json:"name"`
 	ShopOwner               string     `json:"shop_owner"`
 	Email                   string     `json:"email"`
+	CustomerEmail           string     `json:"customer_email"`
 	CreatedAt               *time.Time `json:"created_at"`
 	UpdatedAt               *time.Time `json:"updated_at"`
 	Address1                string     `json:"address1"`
+	Address2                string     `json:"address2"`
 	City                    string     `json:"city"`
 	Country                 string     `json:"country"`
 	CountryCode             string     `json:"country_code"`
@@ -38,6 +40,7 @@ type Shop struct {
 	Zip                     string     `json:"zip"`
 	MoneyFormat             string     `json:"money_format"`
 	MoneyWithCurrencyFormat string     `json:"money_with_currency_format"`
+	WeightUnit              string     `json:"weight_unit"`
 	MyshopifyDomain         string     `json:"myshopify_domain"`
 	PlanName                string     `json:"plan_name"`
 	PlanDisplayName         string     `json:"plan_display_name"`
@@ -46,11 +49,14 @@ type Shop struct {
 	Timezone                string     `json:"timezone"`
 	IanaTimezone            string     `json:"iana_timezone"`
 	ForceSSL                bool       `json:"force_ssl"`
+	TaxShipping             bool       `json:"tax_shipping"`
+	TaxesIncluded           bool       `json:"taxes_included"`
 	HasStorefront           bool       `json:"has_storefront"`
 	HasDiscounts            bool       `json:"has_discounts"`
 	HasGiftcards            bool       `json:"has_gift_cards"`
 	SetupRequire            bool       `json:"setup_required"`
 	CountyTaxes             bool       `json:"county_taxes"`
+	CheckoutAPISupported    bool       `json:"checkout_api_supported"`
 }
 
 // Represents the result from the admin/shop.json endpoint
