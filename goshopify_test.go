@@ -21,6 +21,17 @@ var (
 	app    App
 )
 
+// errReader can be used to simulate a failed call to response.Body.Read
+type errReader struct{}
+
+func (errReader) Read([]byte) (int, error) {
+	return 0, errors.New("test-error")
+}
+
+func (errReader) Close() error {
+	return nil
+}
+
 func setup() {
 	app = App{
 		ApiKey:      "apikey",
@@ -258,6 +269,15 @@ func TestDo(t *testing.T) {
 				Message: "Not acceptable",
 			},
 		},
+		{
+			"foo/8",
+			httpmock.NewStringResponder(500, "<html></html>"),
+			ResponseDecodingError{
+				Body:    []byte("<html></html>"),
+				Message: "invalid character '<' looking for beginning of value",
+				Status:  500,
+			},
+		},
 	}
 
 	for _, c := range cases {
@@ -480,6 +500,10 @@ func TestCheckResponseError(t *testing.T) {
 		{
 			httpmock.NewStringResponse(400, `{error:bad request}`),
 			errors.New("invalid character 'e' looking for beginning of object key string"),
+		},
+		{
+			&http.Response{StatusCode: 400, Body: errReader{}},
+			errors.New("test-error"),
 		},
 	}
 

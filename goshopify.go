@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -84,6 +84,18 @@ func (e ResponseError) Error() string {
 	}
 
 	return "Unknown Error"
+}
+
+// ResponseDecodingError occurs when the respone body from Shopify could
+// not be parsed.
+type ResponseDecodingError struct {
+	Body    []byte
+	Message string
+	Status  int
+}
+
+func (e ResponseDecodingError) Error() string {
+	return e.Message
 }
 
 // An error specific to a rate-limiting response. Embeds the ResponseError to
@@ -223,15 +235,22 @@ func CheckResponseError(r *http.Response) error {
 		Errors interface{} `json:"errors"`
 	}{}
 
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&shopifyError)
-	switch {
-	case err == io.EOF:
-		// empty body, this probably means shopify returned an error with no body
-		// we'll handle that error in wrapSpecificError()
-	case err != nil:
-		// other error
+	bodyBytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
 		return err
+	}
+
+	// empty body, this probably means shopify returned an error with no body
+	// we'll handle that error in wrapSpecificError()
+	if len(bodyBytes) > 0 {
+		err := json.Unmarshal(bodyBytes, &shopifyError)
+		if err != nil {
+			return ResponseDecodingError{
+				Body:    bodyBytes,
+				Message: err.Error(),
+				Status:  r.StatusCode,
+			}
+		}
 	}
 
 	// Create the response error from the Shopify error.
