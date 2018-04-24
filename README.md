@@ -46,7 +46,7 @@ func MyHandler(w http.ResponseWriter, r *http.Request) {
 // Fetch a permanent access token in the callback
 func MyCallbackHandler(w http.ResponseWriter, r *http.Request) {
     // Check that the callback signature is valid
-    if !app.VerifyAuthorizationURL(r.URL) {
+    if ok, _ := app.VerifyAuthorizationURL(r.URL); !ok {
         http.Error(w, "Invalid Signature", http.StatusUnauthorized)
         return
     }
