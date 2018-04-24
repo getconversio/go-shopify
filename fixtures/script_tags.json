@@ -1,0 +1,10 @@
+{
+  "script_tag": {
+    "id": 870402688,
+    "src": "https://djavaskripped.org/fancy.js",
+    "event": "onload",
+    "created_at": "2018-03-21T11:39:52-04:00",
+    "updated_at": "2018-03-21T11:39:52-04:00",
+    "display_scope": "all"
+  }
+}

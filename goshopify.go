@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -14,7 +15,6 @@ import (
 	"time"
 
 	"github.com/google/go-querystring/query"
-	"io"
 )
 
 const (
@@ -60,6 +60,7 @@ type Client struct {
 	Transaction      TransactionService
 	Theme            ThemeService
 	Asset            AssetService
+	ScriptTag        ScriptTagService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -166,6 +167,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Transaction = &TransactionServiceOp{client: c}
 	c.Theme = &ThemeServiceOp{client: c}
 	c.Asset = &AssetServiceOp{client: c}
+	c.ScriptTag = &ScriptTagServiceOp{client: c}
 
 	return c
 }
