@@ -90,7 +90,10 @@ func TestCustomerGet(t *testing.T) {
 	}
 
 	loc := time.FixedZone("AEST", 10)
-
+	address1 := &CustomerAddress{ID: 1, CustomerID: 1, FirstName: "Test", LastName: "Citizen", Company: "",
+		Address1: "1 Smith St", Address2: "", City: "BRISBANE", Province: "Queensland", Country: "Australia",
+		Zip: "4000", Phone: "1111 111 111", Name: "Test Citizen", ProvinceCode: "QLD", CountryCode: "AU",
+		CountryName: "Australia", Default: true}
 	createdAt := time.Date(2017, time.September, 23, 18, 15, 47, 0, loc)
 	updatedAt := time.Date(2017, time.September, 23, 18, 15, 47, 0, loc)
 	totalSpent := decimal.NewFromFloat(278.60)
@@ -109,6 +112,8 @@ func TestCustomerGet(t *testing.T) {
 		LastOrderId:      123,
 		Note:             "",
 		Phone:            "",
+		DefaultAddress:   address1,
+		Addresses:        []*CustomerAddress{address1},
 		CreatedAt:        &createdAt,
 		UpdatedAt:        &updatedAt,
 	}
@@ -157,6 +162,67 @@ func TestCustomerGet(t *testing.T) {
 	}
 	if customer.Phone != expectation.Phone {
 		t.Errorf("Customer.Phone returned %+v, expected %+v", customer.Phone, expectation.Phone)
+	}
+	if customer.DefaultAddress == nil {
+		t.Errorf("Customer.Address is nil, expected not nil")
+	} else {
+		if customer.DefaultAddress.ID != expectation.DefaultAddress.ID {
+			t.Errorf("Customer.DefaultAddress.ID returned %+v, expected %+v", customer.DefaultAddress.ID, expectation.DefaultAddress.ID)
+		}
+		if customer.DefaultAddress.CustomerID != expectation.DefaultAddress.CustomerID {
+			t.Errorf("Customer.DefaultAddress.CustomerID returned %+v, expected %+v", customer.DefaultAddress.CustomerID, expectation.DefaultAddress.CustomerID)
+		}
+		if customer.DefaultAddress.FirstName != expectation.DefaultAddress.FirstName {
+			t.Errorf("Customer.DefaultAddress.FirstName returned %+v, expected %+v", customer.DefaultAddress.FirstName, expectation.DefaultAddress.FirstName)
+		}
+		if customer.DefaultAddress.LastName != expectation.DefaultAddress.LastName {
+			t.Errorf("Customer.DefaultAddress.LastName returned %+v, expected %+v", customer.DefaultAddress.LastName, expectation.DefaultAddress.LastName)
+		}
+		if customer.DefaultAddress.Company != expectation.DefaultAddress.Company {
+			t.Errorf("Customer.DefaultAddress.Company returned %+v, expected %+v", customer.DefaultAddress.Company, expectation.DefaultAddress.Company)
+		}
+		if customer.DefaultAddress.Address1 != expectation.DefaultAddress.Address1 {
+			t.Errorf("Customer.DefaultAddress.Address1 returned %+v, expected %+v", customer.DefaultAddress.Address1, expectation.DefaultAddress.Address1)
+		}
+		if customer.DefaultAddress.Address2 != expectation.DefaultAddress.Address2 {
+			t.Errorf("Customer.DefaultAddress.Address2 returned %+v, expected %+v", customer.DefaultAddress.Address2, expectation.DefaultAddress.Address2)
+		}
+		if customer.DefaultAddress.City != expectation.DefaultAddress.City {
+			t.Errorf("Customer.DefaultAddress.City returned %+v, expected %+v", customer.DefaultAddress.City, expectation.DefaultAddress.City)
+		}
+		if customer.DefaultAddress.Province != expectation.DefaultAddress.Province {
+			t.Errorf("Customer.DefaultAddress.Province returned %+v, expected %+v", customer.DefaultAddress.Province, expectation.DefaultAddress.Province)
+		}
+		if customer.DefaultAddress.Country != expectation.DefaultAddress.Country {
+			t.Errorf("Customer.DefaultAddress.Country returned %+v, expected %+v", customer.DefaultAddress.Country, expectation.DefaultAddress.Country)
+		}
+		if customer.DefaultAddress.Zip != expectation.DefaultAddress.Zip {
+			t.Errorf("Customer.DefaultAddress.Zip returned %+v, expected %+v", customer.DefaultAddress.Zip, expectation.DefaultAddress.Zip)
+		}
+		if customer.DefaultAddress.Phone != expectation.DefaultAddress.Phone {
+			t.Errorf("Customer.DefaultAddress.Phone returned %+v, expected %+v", customer.DefaultAddress.Phone, expectation.DefaultAddress.Phone)
+		}
+		if customer.DefaultAddress.Name != expectation.DefaultAddress.Name {
+			t.Errorf("Customer.DefaultAddress.Name returned %+v, expected %+v", customer.DefaultAddress.Name, expectation.DefaultAddress.Name)
+		}
+		if customer.DefaultAddress.ProvinceCode != expectation.DefaultAddress.ProvinceCode {
+			t.Errorf("Customer.DefaultAddress.ProvinceCode returned %+v, expected %+v", customer.DefaultAddress.ProvinceCode, expectation.DefaultAddress.ProvinceCode)
+		}
+		if customer.DefaultAddress.CountryCode != expectation.DefaultAddress.CountryCode {
+			t.Errorf("Customer.DefaultAddress.ID returned %+v, expected %+v", customer.DefaultAddress.ID, expectation.DefaultAddress.ID)
+		}
+		if customer.DefaultAddress.CountryCode != expectation.DefaultAddress.CountryCode {
+			t.Errorf("Customer.DefaultAddress.CountryCode returned %+v, expected %+v", customer.DefaultAddress.CountryCode, expectation.DefaultAddress.CountryCode)
+		}
+		if customer.DefaultAddress.CountryName != expectation.DefaultAddress.CountryName {
+			t.Errorf("Customer.DefaultAddress.CountryName returned %+v, expected %+v", customer.DefaultAddress.CountryName, expectation.DefaultAddress.CountryName)
+		}
+		if customer.DefaultAddress.Default != expectation.DefaultAddress.Default {
+			t.Errorf("Customer.DefaultAddress.Default returned %+v, expected %+v", customer.DefaultAddress.Default, expectation.DefaultAddress.Default)
+		}
+	}
+	if len(customer.Addresses) != len(expectation.Addresses) {
+		t.Errorf("Customer.Addresses count returned %d, expected %d", len(customer.Addresses), len(expectation.Addresses))
 	}
 }
 

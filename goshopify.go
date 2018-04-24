@@ -13,8 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-querystring/query"
 	"io"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -52,6 +53,7 @@ type Client struct {
 	CustomCollection CustomCollectionService
 	SmartCollection  SmartCollectionService
 	Customer         CustomerService
+	Checkout         CheckoutService
 	Order            OrderService
 	Shop             ShopService
 	Webhook          WebhookService
@@ -158,6 +160,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.CustomCollection = &CustomCollectionServiceOp{client: c}
 	c.SmartCollection = &SmartCollectionServiceOp{client: c}
 	c.Customer = &CustomerServiceOp{client: c}
+	c.Checkout = &CheckoutServiceOp{client: c}
 	c.Order = &OrderServiceOp{client: c}
 	c.Shop = &ShopServiceOp{client: c}
 	c.Webhook = &WebhookServiceOp{client: c}
@@ -274,6 +277,7 @@ func CheckResponseError(r *http.Response) error {
 			// Check to make sure the interface is a slice
 			// json always serializes JSON arrays into []interface{}
 			if reflect.TypeOf(v).Kind() == reflect.Slice {
+
 				for _, elem := range v.([]interface{}) {
 					// If the primary message of the response error is not set, use
 					// any message.
@@ -283,6 +287,9 @@ func CheckResponseError(r *http.Response) error {
 					topicAndElem := fmt.Sprintf("%v: %v", k, elem)
 					responseError.Errors = append(responseError.Errors, topicAndElem)
 				}
+			} else if reflect.TypeOf(v).Kind() == reflect.String {
+				topicAndElem := fmt.Sprintf("%v: %v", k, v)
+				responseError.Errors = append(responseError.Errors, topicAndElem)
 			}
 		}
 	}
