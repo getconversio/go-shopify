@@ -17,6 +17,7 @@ type CustomerService interface {
 	Count(interface{}) (int, error)
 	Get(int, interface{}) (*Customer, error)
 	Search(interface{}) ([]Customer, error)
+	Create(Customer) (*Customer, error)
 	Update(Customer) (*Customer, error)
 }
 
@@ -85,6 +86,15 @@ func (s *CustomerServiceOp) Get(customerID int, options interface{}) (*Customer,
 	path := fmt.Sprintf("%s/%v.json", customersBasePath, customerID)
 	resource := new(CustomerResource)
 	err := s.client.Get(path, resource, options)
+	return resource.Customer, err
+}
+
+// Create a new customer
+func (s *CustomerServiceOp) Create(customer Customer) (*Customer, error) {
+	path := fmt.Sprintf("%s.json", customersBasePath)
+	wrappedData := CustomerResource{Customer: &customer}
+	resource := new(CustomerResource)
+	err := s.client.Post(path, wrappedData, resource)
 	return resource.Customer, err
 }
 

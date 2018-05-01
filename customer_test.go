@@ -182,3 +182,26 @@ func TestCustomerUpdate(t *testing.T) {
 		t.Errorf("Customer.ID returned %+v expected %+v", returnedCustomer.ID, expectedCustomerID)
 	}
 }
+
+func TestCustomerCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/customers.json",
+		httpmock.NewBytesResponder(200, loadFixture("customer.json")))
+
+	customer := Customer{
+		ID:   1,
+		Tags: "new",
+	}
+
+	returnedCustomer, err := client.Customer.Create(customer)
+	if err != nil {
+		t.Errorf("Customer.Create returned error: %v", err)
+	}
+
+	expectedCustomerID := 1
+	if returnedCustomer.ID != expectedCustomerID {
+		t.Errorf("Customer.ID returned %+v expected %+v", returnedCustomer.ID, expectedCustomerID)
+	}
+}
