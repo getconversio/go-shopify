@@ -42,6 +42,7 @@ type Customer struct {
 	Phone               string           `json:"phone"`
 	Tags                string           `json:"tags"`
 	LastOrderId         int              `json:"last_order_id"`
+	LastOrderName       string           `json:"last_order_name"`
 	AcceptsMarketing    bool             `json:"accepts_marketing"`
 	CreatedAt           *time.Time       `json:"created_at"`
 	UpdatedAt           *time.Time       `json:"updated_at"`
