@@ -61,6 +61,7 @@ type Client struct {
 	Theme            ThemeService
 	Asset            AssetService
 	ScriptTag        ScriptTagService
+	Metafield        MetafieldService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -180,6 +181,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Theme = &ThemeServiceOp{client: c}
 	c.Asset = &AssetServiceOp{client: c}
 	c.ScriptTag = &ScriptTagServiceOp{client: c}
+	c.Metafield = &MetafieldServiceOp{client: c}
 
 	return c
 }
