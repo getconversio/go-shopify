@@ -95,6 +95,16 @@ type Order struct {
 	Refunds               []Refund         `json:"refunds"`
 	UserId                int              `json:"user_id"`
 	OrderStatusUrl        string           `json:"order_status_url"`
+	Gateway               string           `json:"gateway"`
+	Confirmed             bool             `json:"confirmed"`
+	TotalPriceUSD         *decimal.Decimal `json:"total_price_usd"`
+	CheckoutToken         string           `json:"checkout_token"`
+	Reference             string           `json:"reference"`
+	SourceIdentifier      string           `json:"source_identifier"`
+	SourceURL             string           `json:"source_url"`
+	DeviceID              int              `json:"device_id"`
+	Phone                 string           `json:"phone"`
+	LandingSiteRef        string           `json:"landing_site_ref"`
 }
 
 type Address struct {
