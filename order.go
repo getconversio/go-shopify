@@ -105,6 +105,8 @@ type Order struct {
 	DeviceID              int              `json:"device_id"`
 	Phone                 string           `json:"phone"`
 	LandingSiteRef        string           `json:"landing_site_ref"`
+	CheckoutID            int              `json:"checkout_id"`
+	ContactEmail          string           `json:"contact_email"`
 }
 
 type Address struct {
