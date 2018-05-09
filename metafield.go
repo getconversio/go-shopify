@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-const metafieldsBasePath = "admin/metafields"
-
 // MetafieldService is an interface for interfacing with the metafield endpoints
 // of the Shopify API.
 // https://help.shopify.com/api/reference/metafield
@@ -22,21 +20,23 @@ type MetafieldService interface {
 // MetafieldServiceOp handles communication with the metafield
 // related methods of the Shopify API.
 type MetafieldServiceOp struct {
-	client *Client
+	client     *Client
+	resource   string
+	resourceID int
 }
 
 // Metafield represents a Shopify metafield.
 type Metafield struct {
-	ID            int        `json:"id,omitempty"`
-	Key           string     `json:"key,omitempty"`
-	Value         string     `json:"value,omitempty"`
-	ValueType     string     `json:"value_type,omitempty"`
-	Namespace     string     `json:"namespace,omitempty"`
-	Description   string     `json:"description,omitempty"`
-	OwnerId       int        `json:"owner_id,omitempty"`
-	CreatedAt     *time.Time `json:"created_at,omitempty"`
-	UpdatedAt     *time.Time `json:"updated_at,omitempty"`
-	OwnerResource string     `json:"owner_resource,omitempty"`
+	ID            int        `json:"id"`
+	Key           string     `json:"key"`
+	Value         string     `json:"value"`
+	ValueType     string     `json:"value_type"`
+	Namespace     string     `json:"namespace"`
+	Description   string     `json:"description"`
+	OwnerId       int        `json:"owner_id"`
+	CreatedAt     *time.Time `json:"created_at"`
+	UpdatedAt     *time.Time `json:"updated_at"`
+	OwnerResource string     `json:"owner_resource"`
 }
 
 // MetafieldResource represents the result from the metafields/X.json endpoint
@@ -51,7 +51,8 @@ type MetafieldsResource struct {
 
 // List metafields
 func (s *MetafieldServiceOp) List(options interface{}) ([]Metafield, error) {
-	path := fmt.Sprintf("%s.json", metafieldsBasePath)
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	path := fmt.Sprintf("%s.json", prefix)
 	resource := new(MetafieldsResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Metafields, err
@@ -59,13 +60,15 @@ func (s *MetafieldServiceOp) List(options interface{}) ([]Metafield, error) {
 
 // Count metafields
 func (s *MetafieldServiceOp) Count(options interface{}) (int, error) {
-	path := fmt.Sprintf("%s/count.json", metafieldsBasePath)
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	path := fmt.Sprintf("%s/count.json", prefix)
 	return s.client.Count(path, options)
 }
 
 // Get individual metafield
 func (s *MetafieldServiceOp) Get(metafieldID int, options interface{}) (*Metafield, error) {
-	path := fmt.Sprintf("%s/%d.json", metafieldsBasePath, metafieldID)
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	path := fmt.Sprintf("%s/%d.json", prefix, metafieldID)
 	resource := new(MetafieldResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Metafield, err
@@ -73,7 +76,8 @@ func (s *MetafieldServiceOp) Get(metafieldID int, options interface{}) (*Metafie
 
 // Create a new metafield
 func (s *MetafieldServiceOp) Create(metafield Metafield) (*Metafield, error) {
-	path := fmt.Sprintf("%s.json", metafieldsBasePath)
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	path := fmt.Sprintf("%s.json", prefix)
 	wrappedData := MetafieldResource{Metafield: &metafield}
 	resource := new(MetafieldResource)
 	err := s.client.Post(path, wrappedData, resource)
@@ -82,7 +86,8 @@ func (s *MetafieldServiceOp) Create(metafield Metafield) (*Metafield, error) {
 
 // Update an existing metafield
 func (s *MetafieldServiceOp) Update(metafield Metafield) (*Metafield, error) {
-	path := fmt.Sprintf("%s/%d.json", metafieldsBasePath, metafield.ID)
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	path := fmt.Sprintf("%s/%d.json", prefix, metafield.ID)
 	wrappedData := MetafieldResource{Metafield: &metafield}
 	resource := new(MetafieldResource)
 	err := s.client.Put(path, wrappedData, resource)
@@ -91,5 +96,6 @@ func (s *MetafieldServiceOp) Update(metafield Metafield) (*Metafield, error) {
 
 // Delete an existing metafield
 func (s *MetafieldServiceOp) Delete(metafieldID int) error {
-	return s.client.Delete(fmt.Sprintf("%s/%d.json", metafieldsBasePath, metafieldID))
+	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
+	return s.client.Delete(fmt.Sprintf("%s/%d.json", prefix, metafieldID))
 }

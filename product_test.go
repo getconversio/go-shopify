@@ -138,3 +138,139 @@ func TestProductDelete(t *testing.T) {
 		t.Errorf("Product.Delete returned error: %v", err)
 	}
 }
+
+func TestProductMetafields(t *testing.T) {
+	setup()
+	defer teardown()
+
+	metafieldService := client.Product.Metafields(0)
+	if metafieldService == nil {
+		t.Errorf("Product.Metafields returned nil")
+	}
+}
+
+func TestProductMetafieldsList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/metafields.json",
+		httpmock.NewStringResponder(200, `{"metafields": [{"id":1},{"id":2}]}`))
+
+	metafields, err := client.Product.Metafields(1).List(nil)
+	if err != nil {
+		t.Errorf("Product.Metafileds().List returned error: %v", err)
+	}
+
+	expected := []Metafield{{ID: 1}, {ID: 2}}
+	if !reflect.DeepEqual(metafields, expected) {
+		t.Errorf("Product.Metafields().List returned %+v, expected %+v", metafields, expected)
+	}
+}
+
+func TestProductMetafieldsCount(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/metafields/count.json",
+		httpmock.NewStringResponder(200, `{"count": 3}`))
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/metafields/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
+		httpmock.NewStringResponder(200, `{"count": 2}`))
+
+	cnt, err := client.Product.Metafields(1).Count(nil)
+	if err != nil {
+		t.Errorf("Product.Metafields().Count returned error: %v", err)
+	}
+
+	expected := 3
+	if cnt != expected {
+		t.Errorf("Product.Metafields().Count returned %d, expected %d", cnt, expected)
+	}
+
+	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	cnt, err = client.Product.Metafields(1).Count(CountOptions{CreatedAtMin: date})
+	if err != nil {
+		t.Errorf("Product.Metafields().Count returned error: %v", err)
+	}
+
+	expected = 2
+	if cnt != expected {
+		t.Errorf("Product.Metafields().Count returned %d, expected %d", cnt, expected)
+	}
+}
+
+func TestProductMetafieldsGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/metafields/2.json",
+		httpmock.NewStringResponder(200, `{"metafield": {"id":2}}`))
+
+	metafield, err := client.Product.Metafields(1).Get(2, nil)
+	if err != nil {
+		t.Errorf("Product.Metafields().Get returned error: %v", err)
+	}
+
+	expected := &Metafield{ID: 2}
+	if !reflect.DeepEqual(metafield, expected) {
+		t.Errorf("Product.Metafields().Get returned %+v, expected %+v", metafield, expected)
+	}
+}
+
+func TestProductMetafieldsCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products/1/metafields.json",
+		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
+
+	metafield := Metafield{
+		Key:       "app_key",
+		Value:     "app_value",
+		ValueType: "string",
+		Namespace: "affiliates",
+	}
+
+	returnedMetafield, err := client.Product.Metafields(1).Create(metafield)
+	if err != nil {
+		t.Errorf("Product.Metafields().Create returned error: %v", err)
+	}
+
+	MetafieldTests(t, *returnedMetafield)
+}
+
+func TestProductMetafieldsUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/1/metafields/2.json",
+		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
+
+	metafield := Metafield{
+		ID:        2,
+		Key:       "app_key",
+		Value:     "app_value",
+		ValueType: "string",
+		Namespace: "affiliates",
+	}
+
+	returnedMetafield, err := client.Product.Metafields(1).Update(metafield)
+	if err != nil {
+		t.Errorf("Product.Metafields().Update returned error: %v", err)
+	}
+
+	MetafieldTests(t, *returnedMetafield)
+}
+
+func TestProductMetafieldsDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1/metafields/2.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Product.Metafields(1).Delete(2)
+	if err != nil {
+		t.Errorf("Product.Metafields().Delete returned error: %v", err)
+	}
+}

@@ -17,6 +17,7 @@ type ProductService interface {
 	Create(Product) (*Product, error)
 	Update(Product) (*Product, error)
 	Delete(int) error
+	Metafields(int) MetafieldService
 }
 
 // ProductServiceOp handles communication with the product related methods of
@@ -45,6 +46,7 @@ type Product struct {
 	TemplateSuffix                 string          `json:"template_suffix"`
 	MetafieldsGlobalTitleTag       string          `json:"metafields_global_title_tag"`
 	MetafieldsGlobalDescriptionTag string          `json:"metafields_global_description_tag"`
+	Metafields                     []Metafield     `json:"metafields"`
 }
 
 // The options provided by Shopify
@@ -109,4 +111,9 @@ func (s *ProductServiceOp) Update(product Product) (*Product, error) {
 // Delete an existing product
 func (s *ProductServiceOp) Delete(productID int) error {
 	return s.client.Delete(fmt.Sprintf("%s/%d.json", productsBasePath, productID))
+}
+
+// Access product metafields
+func (s *ProductServiceOp) Metafields(resourceID int) MetafieldService {
+	return &MetafieldServiceOp{client: s.client, resource: "products", resourceID: resourceID}
 }

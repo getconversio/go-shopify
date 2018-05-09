@@ -8,7 +8,7 @@ import (
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
-func metafieldTests(t *testing.T, metafield Metafield) {
+func MetafieldTests(t *testing.T, metafield Metafield) {
 	// Check that ID is assigned to the returned metafield
 	expectedInt := 721389482
 	if metafield.ID != expectedInt {
@@ -103,7 +103,7 @@ func TestMetafieldCreate(t *testing.T) {
 		t.Errorf("Metafield.Create returned error: %v", err)
 	}
 
-	metafieldTests(t, *returnedMetafield)
+	MetafieldTests(t, *returnedMetafield)
 }
 
 func TestMetafieldUpdate(t *testing.T) {
@@ -124,7 +124,7 @@ func TestMetafieldUpdate(t *testing.T) {
 		t.Errorf("Metafield.Update returned error: %v", err)
 	}
 
-	metafieldTests(t, *returnedMetafield)
+	MetafieldTests(t, *returnedMetafield)
 }
 
 func TestMetafieldDelete(t *testing.T) {
