@@ -178,7 +178,7 @@ func TestOrderCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Order.Count(CountOptions{CreatedAtMin: date})
+	cnt, err = client.Order.Count(OrderCountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Order.Count returned error: %v", err)
 	}
