@@ -151,6 +151,7 @@ type LineItem struct {
 	FulfillmentService         string           `json:"fulfillment_service"`
 	RequiresShipping           bool             `json:"requires_shipping"`
 	VariantInventoryManagement string           `json:"variant_inventory_management"`
+	PreTaxPrice                *decimal.Decimal `json:"pre_tax_price"`
 	Properties                 []NoteAttribute  `json:"properties"`
 	ProductExists              bool             `json:"product_exists"`
 	FulfillableQuantity        int              `json:"fulfillable_quantity"`
