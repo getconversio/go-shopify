@@ -42,7 +42,7 @@ func orderTests(t *testing.T, order Order) {
 	ptp := decimal.NewFromFloat(9)
 	lineItem := order.LineItems[0]
 	if !ptp.Equals(*lineItem.PreTaxPrice) {
-		t.Errorf("Order.LineItems[0].PreTaxPrice, expected %v, actual %v", "9.04", lineItem.PreTaxPrice)
+		t.Errorf("Order.LineItems[0].PreTaxPrice, expected %v, actual %v", "9.00", lineItem.PreTaxPrice)
 	}
 }
 
