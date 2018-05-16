@@ -17,6 +17,18 @@ type MetafieldService interface {
 	Delete(int) error
 }
 
+// MetafieldsService is an interface for other Shopify resources
+// to interface with the metafield endpoints of the Shopify API.
+// https://help.shopify.com/api/reference/metafield
+type MetafieldsService interface {
+	ListMetafields(int, interface{}) ([]Metafield, error)
+	CountMetafields(int, interface{}) (int, error)
+	GetMetafield(int, int, interface{}) (*Metafield, error)
+	CreateMetafield(int, Metafield) (*Metafield, error)
+	UpdateMetafield(int, Metafield) (*Metafield, error)
+	DeleteMetafield(int, int) error
+}
+
 // MetafieldServiceOp handles communication with the metafield
 // related methods of the Shopify API.
 type MetafieldServiceOp struct {
@@ -27,16 +39,16 @@ type MetafieldServiceOp struct {
 
 // Metafield represents a Shopify metafield.
 type Metafield struct {
-	ID            int        `json:"id"`
-	Key           string     `json:"key"`
-	Value         string     `json:"value"`
-	ValueType     string     `json:"value_type"`
-	Namespace     string     `json:"namespace"`
-	Description   string     `json:"description"`
-	OwnerId       int        `json:"owner_id"`
-	CreatedAt     *time.Time `json:"created_at"`
-	UpdatedAt     *time.Time `json:"updated_at"`
-	OwnerResource string     `json:"owner_resource"`
+	ID            int         `json:"id"`
+	Key           string      `json:"key"`
+	Value         interface{} `json:"value"`
+	ValueType     string      `json:"value_type"`
+	Namespace     string      `json:"namespace"`
+	Description   string      `json:"description"`
+	OwnerId       int         `json:"owner_id"`
+	CreatedAt     *time.Time  `json:"created_at"`
+	UpdatedAt     *time.Time  `json:"updated_at"`
+	OwnerResource string      `json:"owner_resource"`
 }
 
 // MetafieldResource represents the result from the metafields/X.json endpoint
