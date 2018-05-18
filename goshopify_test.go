@@ -244,7 +244,11 @@ func TestDo(t *testing.T) {
 		{
 			"foo/5",
 			httpmock.NewStringResponder(200, `{foo:bar}`),
-			errors.New("invalid character 'f' looking for beginning of object key string"),
+			ResponseDecodingError{
+				Body:    []byte("{foo:bar}"),
+				Message: "invalid character 'f' looking for beginning of object key string",
+				Status:  200,
+			},
 		},
 		{
 			"foo/6",
@@ -277,6 +281,14 @@ func TestDo(t *testing.T) {
 				Message: "invalid character '<' looking for beginning of value",
 				Status:  500,
 			},
+		},
+		{
+			"foo/9",
+			func(req *http.Request) (*http.Response, error) {
+				resp := &http.Response{StatusCode: 200, Body: errReader{}}
+				return resp, nil
+			},
+			errors.New("test-error"),
 		},
 	}
 

@@ -87,7 +87,7 @@ func (e ResponseError) Error() string {
 	return "Unknown Error"
 }
 
-// ResponseDecodingError occurs when the respone body from Shopify could
+// ResponseDecodingError occurs when the response body from Shopify could
 // not be parsed.
 type ResponseDecodingError struct {
 	Body    []byte
@@ -201,11 +201,19 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 		return err
 	}
 
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
 	if v != nil {
-		decoder := json.NewDecoder(resp.Body)
-		err := decoder.Decode(&v)
+		err := json.Unmarshal(bodyBytes, &v)
 		if err != nil {
-			return err
+			return ResponseDecodingError{
+				Body:    bodyBytes,
+				Message: err.Error(),
+				Status:  resp.StatusCode,
+			}
 		}
 	}
 
