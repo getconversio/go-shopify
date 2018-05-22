@@ -43,6 +43,7 @@ type Customer struct {
 	Phone               string             `json:"phone"`
 	Tags                string             `json:"tags"`
 	LastOrderId         int                `json:"last_order_id"`
+	LastOrderName       string             `json:"last_order_name"`
 	AcceptsMarketing    bool               `json:"accepts_marketing"`
 	DefaultAddress      *CustomerAddress   `json:"default_address"`
 	Addresses           []*CustomerAddress `json:"addresses"`
