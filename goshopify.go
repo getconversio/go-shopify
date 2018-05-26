@@ -48,19 +48,20 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Product          ProductService
-	CustomCollection CustomCollectionService
-	SmartCollection  SmartCollectionService
-	Customer         CustomerService
-	Order            OrderService
-	Shop             ShopService
-	Webhook          WebhookService
-	Variant          VariantService
-	Image            ImageService
-	Transaction      TransactionService
-	Theme            ThemeService
-	Asset            AssetService
-	ScriptTag        ScriptTagService
+	Product                    ProductService
+	CustomCollection           CustomCollectionService
+	SmartCollection            SmartCollectionService
+	Customer                   CustomerService
+	Order                      OrderService
+	Shop                       ShopService
+	Webhook                    WebhookService
+	Variant                    VariantService
+	Image                      ImageService
+	Transaction                TransactionService
+	Theme                      ThemeService
+	Asset                      AssetService
+	ScriptTag                  ScriptTagService
+	RecurringApplicationCharge RecurringApplicationChargeService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -180,6 +181,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Theme = &ThemeServiceOp{client: c}
 	c.Asset = &AssetServiceOp{client: c}
 	c.ScriptTag = &ScriptTagServiceOp{client: c}
+	c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
 
 	return c
 }
