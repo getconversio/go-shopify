@@ -3,13 +3,12 @@ package goshopify
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	httpmock "gopkg.in/jarcoal/httpmock.v1"
-	"time"
 )
 
 func smartCollectionTests(t *testing.T, collection SmartCollection) {
-
 	// Test a few fields
 	cases := []struct {
 		field    string

@@ -48,13 +48,14 @@ type ScriptTagOption struct {
 	Fields       string    `url:"fields,omitempty"`
 }
 
-// Represents the result from the /admin/script_tags.json endpoint.
+// ScriptTagsResource represents the result from the admin/script_tags.json
+// endpoint.
 type ScriptTagsResource struct {
 	ScriptTags []ScriptTag `json:"script_tags"`
 }
 
-// Represents the result from the /admin/script_tags/{#script_tag_id}.json
-// endpoint.
+// ScriptTagResource represents the result from the
+// admin/script_tags/{#script_tag_id}.json endpoint.
 type ScriptTagResource struct {
 	ScriptTag *ScriptTag `json:"script_tag"`
 }
