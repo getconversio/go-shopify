@@ -38,6 +38,12 @@ func orderTests(t *testing.T, order Order) {
 	if order.Customer.Email != "john@test.com" {
 		t.Errorf("Customer.Email, expected %v, actual %v", "john@test.com", order.Customer.Email)
 	}
+
+	ptp := decimal.NewFromFloat(9)
+	lineItem := order.LineItems[0]
+	if !ptp.Equals(*lineItem.PreTaxPrice) {
+		t.Errorf("Order.LineItems[0].PreTaxPrice, expected %v, actual %v", "9.00", lineItem.PreTaxPrice)
+	}
 }
 
 func transactionTest(t *testing.T, transaction Transaction) {
@@ -178,7 +184,7 @@ func TestOrderCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Order.Count(CountOptions{CreatedAtMin: date})
+	cnt, err = client.Order.Count(OrderCountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Order.Count returned error: %v", err)
 	}

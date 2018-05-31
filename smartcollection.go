@@ -48,7 +48,7 @@ type SmartCollection struct {
 	Disjunctive    bool       `json:"disjunctive"`
 }
 
-// SmartCollectionResource represents the result form the smart_collections/X.json endpoint
+// SmartCollectionResource represents the result from the smart_collections/X.json endpoint
 type SmartCollectionResource struct {
 	Collection *SmartCollection `json:"smart_collection"`
 }

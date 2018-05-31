@@ -61,6 +61,7 @@ type Client struct {
 	Theme            ThemeService
 	Asset            AssetService
 	ScriptTag        ScriptTagService
+  RecurringApplicationCharge RecurringApplicationChargeService
 	Metafield        MetafieldService
 }
 
@@ -181,8 +182,9 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Theme = &ThemeServiceOp{client: c}
 	c.Asset = &AssetServiceOp{client: c}
 	c.ScriptTag = &ScriptTagServiceOp{client: c}
+  c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
 	c.Metafield = &MetafieldServiceOp{client: c}
-
+  
 	return c
 }
 

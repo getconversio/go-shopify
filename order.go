@@ -24,6 +24,22 @@ type OrderServiceOp struct {
 	client *Client
 }
 
+// A struct for all available order count options
+type OrderCountOptions struct {
+	Page              int       `url:"page,omitempty"`
+	Limit             int       `url:"limit,omitempty"`
+	SinceID           int       `url:"since_id,omitempty"`
+	CreatedAtMin      time.Time `url:"created_at_min,omitempty"`
+	CreatedAtMax      time.Time `url:"created_at_max,omitempty"`
+	UpdatedAtMin      time.Time `url:"updated_at_min,omitempty"`
+	UpdatedAtMax      time.Time `url:"updated_at_max,omitempty"`
+	Order             string    `url:"order,omitempty"`
+	Fields            string    `url:"fields,omitempty"`
+	Status            string    `url:"status,omitempty"`
+	FinancialStatus   string    `url:"financial_status,omitempty"`
+	FulfillmentStatus string    `url:"fulfillment_status,omitempty"`
+}
+
 // A struct for all available order list options.
 // See: https://help.shopify.com/api/reference/order#index
 type OrderListOptions struct {
@@ -95,6 +111,18 @@ type Order struct {
 	Refunds               []Refund         `json:"refunds"`
 	UserId                int              `json:"user_id"`
 	OrderStatusUrl        string           `json:"order_status_url"`
+	Gateway               string           `json:"gateway"`
+	Confirmed             bool             `json:"confirmed"`
+	TotalPriceUSD         *decimal.Decimal `json:"total_price_usd"`
+	CheckoutToken         string           `json:"checkout_token"`
+	Reference             string           `json:"reference"`
+	SourceIdentifier      string           `json:"source_identifier"`
+	SourceURL             string           `json:"source_url"`
+	DeviceID              int              `json:"device_id"`
+	Phone                 string           `json:"phone"`
+	LandingSiteRef        string           `json:"landing_site_ref"`
+	CheckoutID            int              `json:"checkout_id"`
+	ContactEmail          string           `json:"contact_email"`
 }
 
 type Address struct {
@@ -139,6 +167,7 @@ type LineItem struct {
 	FulfillmentService         string           `json:"fulfillment_service"`
 	RequiresShipping           bool             `json:"requires_shipping"`
 	VariantInventoryManagement string           `json:"variant_inventory_management"`
+	PreTaxPrice                *decimal.Decimal `json:"pre_tax_price"`
 	Properties                 []NoteAttribute  `json:"properties"`
 	ProductExists              bool             `json:"product_exists"`
 	FulfillableQuantity        int              `json:"fulfillable_quantity"`
