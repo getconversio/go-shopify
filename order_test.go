@@ -194,3 +194,30 @@ func TestOrderCount(t *testing.T) {
 		t.Errorf("Order.Count returned %d, expected %d", cnt, expected)
 	}
 }
+
+func TestOrderCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders.json",
+		httpmock.NewStringResponder(201, `{"order":{"id": 1}}`))
+
+	order := Order{
+		LineItems: []LineItem{
+			LineItem{
+				VariantID: 1,
+				Quantity:  1,
+			},
+		},
+	}
+
+	o, err := client.Order.Create(order)
+	if err != nil {
+		t.Errorf("Order.Create returned error: %v", err)
+	}
+
+	expected := Order{ID: 1}
+	if o.ID != expected.ID {
+		t.Errorf("Order.Create returned id %d, expected %d", o.ID, expected.ID)
+	}
+}
