@@ -203,19 +203,11 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 		return err
 	}
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
 	if v != nil {
-		err := json.Unmarshal(bodyBytes, &v)
+		decoder := json.NewDecoder(resp.Body)
+		err := decoder.Decode(&v)
 		if err != nil {
-			return ResponseDecodingError{
-				Body:    bodyBytes,
-				Message: err.Error(),
-				Status:  resp.StatusCode,
-			}
+			return err
 		}
 	}
 

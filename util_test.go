@@ -76,7 +76,7 @@ func TestMetafieldPathPrefix(t *testing.T) {
 	for _, c := range cases {
 		actual := MetafieldPathPrefix(c.resource, c.resourceID)
 		if actual != c.expected {
-			t.Errorf("MetafieldPathPrefix(%s, %s): expected %s, actual %s", c.resource, c.resourceID, c.expected, actual)
+			t.Errorf("MetafieldPathPrefix(%s, %d): expected %s, actual %s", c.resource, c.resourceID, c.expected, actual)
 		}
 	}
 }
