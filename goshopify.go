@@ -62,6 +62,7 @@ type Client struct {
 	Asset                      AssetService
 	ScriptTag                  ScriptTagService
 	RecurringApplicationCharge RecurringApplicationChargeService
+	Metafield                  MetafieldService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -87,7 +88,7 @@ func (e ResponseError) Error() string {
 	return "Unknown Error"
 }
 
-// ResponseDecodingError occurs when the respone body from Shopify could
+// ResponseDecodingError occurs when the response body from Shopify could
 // not be parsed.
 type ResponseDecodingError struct {
 	Body    []byte
@@ -182,6 +183,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Asset = &AssetServiceOp{client: c}
 	c.ScriptTag = &ScriptTagServiceOp{client: c}
 	c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
+	c.Metafield = &MetafieldServiceOp{client: c}
 
 	return c
 }

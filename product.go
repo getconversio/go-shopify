@@ -6,6 +6,7 @@ import (
 )
 
 const productsBasePath = "admin/products"
+const resourceName = "products"
 
 // ProductService is an interface for interfacing with the product endpoints
 // of the Shopify API.
@@ -17,6 +18,9 @@ type ProductService interface {
 	Create(Product) (*Product, error)
 	Update(Product) (*Product, error)
 	Delete(int) error
+
+	// MetafieldsService used for Product resource to communicate with Metafields resource
+	MetafieldsService
 }
 
 // ProductServiceOp handles communication with the product related methods of
@@ -45,6 +49,7 @@ type Product struct {
 	TemplateSuffix                 string          `json:"template_suffix"`
 	MetafieldsGlobalTitleTag       string          `json:"metafields_global_title_tag"`
 	MetafieldsGlobalDescriptionTag string          `json:"metafields_global_description_tag"`
+	Metafields                     []Metafield     `json:"metafields"`
 }
 
 // The options provided by Shopify
@@ -109,4 +114,40 @@ func (s *ProductServiceOp) Update(product Product) (*Product, error) {
 // Delete an existing product
 func (s *ProductServiceOp) Delete(productID int) error {
 	return s.client.Delete(fmt.Sprintf("%s/%d.json", productsBasePath, productID))
+}
+
+// List metafields for a product
+func (s *ProductServiceOp) ListMetafields(productID int, options interface{}) ([]Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.List(options)
+}
+
+// Count metafields for a product
+func (s *ProductServiceOp) CountMetafields(productID int, options interface{}) (int, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.Count(options)
+}
+
+// Get individual metafield for a product
+func (s *ProductServiceOp) GetMetafield(productID int, metafieldID int, options interface{}) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.Get(metafieldID, options)
+}
+
+// Create a new metafield for a product
+func (s *ProductServiceOp) CreateMetafield(productID int, metafield Metafield) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.Create(metafield)
+}
+
+// Update an existing metafield for a product
+func (s *ProductServiceOp) UpdateMetafield(productID int, metafield Metafield) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.Update(metafield)
+}
+
+// // Delete an existing metafield for a product
+func (s *ProductServiceOp) DeleteMetafield(productID int, metafieldID int) error {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	return metafieldService.Delete(metafieldID)
 }
