@@ -184,8 +184,8 @@ type LineItemProperty struct {
 }
 
 type NoteAttribute struct {
-	Name  string      `json:"Name,omitempty"`
-	Value interface{} `json:"Value,omitempty"`
+	Name  string      `json:"name,omitempty"`
+	Value interface{} `json:"value,omitempty"`
 }
 
 // Represents the result from the orders/X.json endpoint
