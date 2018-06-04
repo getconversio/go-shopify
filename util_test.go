@@ -62,3 +62,21 @@ func TestShopBaseUrl(t *testing.T) {
 		}
 	}
 }
+
+func TestMetafieldPathPrefix(t *testing.T) {
+	cases := []struct {
+		resource   string
+		resourceID int
+		expected   string
+	}{
+		{"", 0, "admin/metafields"},
+		{"products", 123, "admin/products/123/metafields"},
+	}
+
+	for _, c := range cases {
+		actual := MetafieldPathPrefix(c.resource, c.resourceID)
+		if actual != c.expected {
+			t.Errorf("MetafieldPathPrefix(%s, %d): expected %s, actual %s", c.resource, c.resourceID, c.expected, actual)
+		}
+	}
+}

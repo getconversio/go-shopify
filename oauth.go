@@ -1,14 +1,14 @@
 package goshopify
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
-	"net/url"
-	"io/ioutil"
-	"bytes"
 	"encoding/base64"
+	"encoding/hex"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 const shopifyChecksumHeader = "X-Shopify-Hmac-Sha256"

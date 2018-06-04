@@ -28,3 +28,14 @@ func ShopBaseUrl(name string) string {
 	name = ShopFullName(name)
 	return fmt.Sprintf("https://%s", name)
 }
+
+// Return the prefix for a metafield path
+func MetafieldPathPrefix(resource string, resourceID int) string {
+	var prefix string
+	if resource == "" {
+		prefix = fmt.Sprintf("admin/metafields")
+	} else {
+		prefix = fmt.Sprintf("admin/%s/%d/metafields", resource, resourceID)
+	}
+	return prefix
+}
