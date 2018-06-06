@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -51,6 +52,64 @@ type RecurringApplicationCharge struct {
 	TrialEndsOn           *time.Time       `json:"trial_ends_on"`
 	UpdateCappedAmountURL string           `json:"update_capped_amount_url"`
 	UpdatedAt             *time.Time       `json:"updated_at"`
+}
+
+func parse(dest **time.Time, data *string) error {
+	if data == nil {
+		return nil
+	}
+	// This is what API doc says: "2013-06-27T08:48:27-04:00"
+	format := time.RFC3339
+	if len(*data) == 10 {
+		// This is how the date looks.
+		format = "2006-01-02"
+	}
+	t, err := time.Parse(format, *data)
+	if err != nil {
+		return err
+	}
+	*dest = &t
+	return nil
+}
+
+func (r *RecurringApplicationCharge) UnmarshalJSON(data []byte) error {
+	// This is a workaround for an API returning incomplete result:
+	// https://ecommerce.shopify.com/c/shopify-apis-and-technology/t/-523203
+	// For longer explanation of a hack, please check:
+	// http://choly.ca/post/go-json-marshalling/
+	type Alias RecurringApplicationCharge
+	aux := &struct {
+		ActivatedOn *string `json:"activated_on"`
+		BillingOn   *string `json:"billing_on"`
+		CancelledOn *string `json:"cancelled_on"`
+		CreatedAt   *string `json:"created_at"`
+		TrialEndsOn *string `json:"trial_ends_on"`
+		UpdatedAt   *string `json:"updated_at"`
+		*Alias
+	}{Alias: (*Alias)(r)}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if err := parse(&r.ActivatedOn, aux.ActivatedOn); err != nil {
+		return err
+	}
+	if err := parse(&r.BillingOn, aux.BillingOn); err != nil {
+		return err
+	}
+	if err := parse(&r.CancelledOn, aux.CancelledOn); err != nil {
+		return err
+	}
+	if err := parse(&r.CreatedAt, aux.CreatedAt); err != nil {
+		return err
+	}
+	if err := parse(&r.TrialEndsOn, aux.TrialEndsOn); err != nil {
+		return err
+	}
+	if err := parse(&r.UpdatedAt, aux.UpdatedAt); err != nil {
+		return err
+	}
+	return nil
 }
 
 // RecurringApplicationChargeResource represents the result from the

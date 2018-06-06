@@ -31,7 +31,7 @@ func recurringApplicationChargeTests(t *testing.T, charge RecurringApplicationCh
 		{"CreatedAt", "2018-05-07T15:47:10-04:00", charge.CreatedAt.Format(time.RFC3339)},
 		{"UpdatedAt", "2018-05-07T15:47:10-04:00", charge.UpdatedAt.Format(time.RFC3339)},
 		{"Test", nilTest, charge.Test},
-		{"ActivatedOn", nilTime, charge.ActivatedOn},
+		{"ActivatedOn", "2018-06-05", charge.ActivatedOn.Format("2006-01-02")},
 		{"TrialEndsOn", nilTime, charge.TrialEndsOn},
 		{"CancelledOn", nilTime, charge.CancelledOn},
 		{"TrialDays", 0, charge.TrialDays},
