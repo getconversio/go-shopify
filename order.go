@@ -128,7 +128,7 @@ type Order struct {
 	LandingSiteRef        string           `json:"landing_site_ref,omitempty"`
 	CheckoutID            int              `json:"checkout_id,omitempty"`
 	ContactEmail          string           `json:"contact_email,omitempty"`
-	Metafields            []Metafield      `json:"metafield,omitempty"`
+	Metafields            []Metafield      `json:"metafields,omitempty"`
 }
 
 type Address struct {

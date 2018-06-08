@@ -53,7 +53,7 @@ type Customer struct {
 	Addresses           []*CustomerAddress `json:"addresses"`
 	CreatedAt           *time.Time         `json:"created_at"`
 	UpdatedAt           *time.Time         `json:"updated_at"`
-	Metafields          []Metafield        `json:"metafield"`
+	Metafields          []Metafield        `json:"metafields"`
 }
 
 // Represents the result from the customers/X.json endpoint
