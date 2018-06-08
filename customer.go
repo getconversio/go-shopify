@@ -8,6 +8,7 @@ import (
 )
 
 const customersBasePath = "admin/customers"
+const customersResourceName = "customers"
 
 // CustomerService is an interface for interfacing with the customers endpoints
 // of the Shopify API.
@@ -19,6 +20,9 @@ type CustomerService interface {
 	Search(interface{}) ([]Customer, error)
 	Create(Customer) (*Customer, error)
 	Update(Customer) (*Customer, error)
+
+	// MetafieldsService used for Customer resource to communicate with Metafields resource
+	MetafieldsService
 }
 
 // CustomerServiceOp handles communication with the product related methods of
@@ -49,6 +53,7 @@ type Customer struct {
 	Addresses           []*CustomerAddress `json:"addresses"`
 	CreatedAt           *time.Time         `json:"created_at"`
 	UpdatedAt           *time.Time         `json:"updated_at"`
+	Metafields          []Metafield        `json:"metafields"`
 }
 
 // Represents the result from the customers/X.json endpoint
@@ -116,4 +121,40 @@ func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
 	resource := new(CustomersResource)
 	err := s.client.Get(path, resource, options)
 	return resource.Customers, err
+}
+
+// List metafields for a customer
+func (s *CustomerServiceOp) ListMetafields(customerID int, options interface{}) ([]Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.List(options)
+}
+
+// Count metafields for a customer
+func (s *CustomerServiceOp) CountMetafields(customerID int, options interface{}) (int, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.Count(options)
+}
+
+// Get individual metafield for a customer
+func (s *CustomerServiceOp) GetMetafield(customerID int, metafieldID int, options interface{}) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.Get(metafieldID, options)
+}
+
+// Create a new metafield for a customer
+func (s *CustomerServiceOp) CreateMetafield(customerID int, metafield Metafield) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.Create(metafield)
+}
+
+// Update an existing metafield for a customer
+func (s *CustomerServiceOp) UpdateMetafield(customerID int, metafield Metafield) (*Metafield, error) {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.Update(metafield)
+}
+
+// // Delete an existing metafield for a customer
+func (s *CustomerServiceOp) DeleteMetafield(customerID int, metafieldID int) error {
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: customersResourceName, resourceID: customerID}
+	return metafieldService.Delete(metafieldID)
 }

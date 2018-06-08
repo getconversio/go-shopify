@@ -6,7 +6,7 @@ import (
 )
 
 const productsBasePath = "admin/products"
-const resourceName = "products"
+const productsResourceName = "products"
 
 // ProductService is an interface for interfacing with the product endpoints
 // of the Shopify API.
@@ -118,36 +118,36 @@ func (s *ProductServiceOp) Delete(productID int) error {
 
 // List metafields for a product
 func (s *ProductServiceOp) ListMetafields(productID int, options interface{}) ([]Metafield, error) {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.List(options)
 }
 
 // Count metafields for a product
 func (s *ProductServiceOp) CountMetafields(productID int, options interface{}) (int, error) {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Count(options)
 }
 
 // Get individual metafield for a product
 func (s *ProductServiceOp) GetMetafield(productID int, metafieldID int, options interface{}) (*Metafield, error) {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Get(metafieldID, options)
 }
 
 // Create a new metafield for a product
 func (s *ProductServiceOp) CreateMetafield(productID int, metafield Metafield) (*Metafield, error) {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Create(metafield)
 }
 
 // Update an existing metafield for a product
 func (s *ProductServiceOp) UpdateMetafield(productID int, metafield Metafield) (*Metafield, error) {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Update(metafield)
 }
 
 // // Delete an existing metafield for a product
 func (s *ProductServiceOp) DeleteMetafield(productID int, metafieldID int) error {
-	metafieldService := &MetafieldServiceOp{client: s.client, resource: resourceName, resourceID: productID}
+	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Delete(metafieldID)
 }
