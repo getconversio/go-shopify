@@ -1,11 +1,12 @@
 package goshopify
 
 import (
+	"reflect"
 	"testing"
 	"time"
 
 	"github.com/shopspring/decimal"
-	"gopkg.in/jarcoal/httpmock.v1"
+	httpmock "gopkg.in/jarcoal/httpmock.v1"
 )
 
 func orderTests(t *testing.T, order Order) {
@@ -192,5 +193,158 @@ func TestOrderCount(t *testing.T) {
 	expected = 2
 	if cnt != expected {
 		t.Errorf("Order.Count returned %d, expected %d", cnt, expected)
+	}
+}
+
+func TestOrderCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders.json",
+		httpmock.NewStringResponder(201, `{"order":{"id": 1}}`))
+
+	order := Order{
+		LineItems: []LineItem{
+			LineItem{
+				VariantID: 1,
+				Quantity:  1,
+			},
+		},
+	}
+
+	o, err := client.Order.Create(order)
+	if err != nil {
+		t.Errorf("Order.Create returned error: %v", err)
+	}
+
+	expected := Order{ID: 1}
+	if o.ID != expected.ID {
+		t.Errorf("Order.Create returned id %d, expected %d", o.ID, expected.ID)
+	}
+}
+
+func TestOrderListMetafields(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/1/metafields.json",
+		httpmock.NewStringResponder(200, `{"metafields": [{"id":1},{"id":2}]}`))
+
+	metafields, err := client.Order.ListMetafields(1, nil)
+	if err != nil {
+		t.Errorf("Order.ListMetafields() returned error: %v", err)
+	}
+
+	expected := []Metafield{{ID: 1}, {ID: 2}}
+	if !reflect.DeepEqual(metafields, expected) {
+		t.Errorf("Order.ListMetafields() returned %+v, expected %+v", metafields, expected)
+	}
+}
+
+func TestOrderCountMetafields(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/1/metafields/count.json",
+		httpmock.NewStringResponder(200, `{"count": 3}`))
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/1/metafields/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
+		httpmock.NewStringResponder(200, `{"count": 2}`))
+
+	cnt, err := client.Order.CountMetafields(1, nil)
+	if err != nil {
+		t.Errorf("Order.CountMetafields() returned error: %v", err)
+	}
+
+	expected := 3
+	if cnt != expected {
+		t.Errorf("Order.CountMetafields() returned %d, expected %d", cnt, expected)
+	}
+
+	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
+	cnt, err = client.Order.CountMetafields(1, CountOptions{CreatedAtMin: date})
+	if err != nil {
+		t.Errorf("Order.CountMetafields() returned error: %v", err)
+	}
+
+	expected = 2
+	if cnt != expected {
+		t.Errorf("Order.CountMetafields() returned %d, expected %d", cnt, expected)
+	}
+}
+
+func TestOrderGetMetafield(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/1/metafields/2.json",
+		httpmock.NewStringResponder(200, `{"metafield": {"id":2}}`))
+
+	metafield, err := client.Order.GetMetafield(1, 2, nil)
+	if err != nil {
+		t.Errorf("Order.GetMetafield() returned error: %v", err)
+	}
+
+	expected := &Metafield{ID: 2}
+	if !reflect.DeepEqual(metafield, expected) {
+		t.Errorf("Order.GetMetafield() returned %+v, expected %+v", metafield, expected)
+	}
+}
+
+func TestOrderCreateMetafield(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/metafields.json",
+		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
+
+	metafield := Metafield{
+		Key:       "app_key",
+		Value:     "app_value",
+		ValueType: "string",
+		Namespace: "affiliates",
+	}
+
+	returnedMetafield, err := client.Order.CreateMetafield(1, metafield)
+	if err != nil {
+		t.Errorf("Order.CreateMetafield() returned error: %v", err)
+	}
+
+	MetafieldTests(t, *returnedMetafield)
+}
+
+func TestOrderUpdateMetafield(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/orders/1/metafields/2.json",
+		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
+
+	metafield := Metafield{
+		ID:        2,
+		Key:       "app_key",
+		Value:     "app_value",
+		ValueType: "string",
+		Namespace: "affiliates",
+	}
+
+	returnedMetafield, err := client.Order.UpdateMetafield(1, metafield)
+	if err != nil {
+		t.Errorf("Order.UpdateMetafield() returned error: %v", err)
+	}
+
+	MetafieldTests(t, *returnedMetafield)
+}
+
+func TestOrderDeleteMetafield(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/orders/1/metafields/2.json",
+		httpmock.NewStringResponder(200, "{}"))
+
+	err := client.Order.DeleteMetafield(1, 2)
+	if err != nil {
+		t.Errorf("Order.DeleteMetafield() returned error: %v", err)
 	}
 }
