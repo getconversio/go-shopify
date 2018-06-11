@@ -2,7 +2,6 @@ package goshopify
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -39,12 +38,6 @@ type Blog struct {
 	TemplateSuffix     string     `json:"template_suffix"`
 	CreatedAt          *time.Time `json:"created_at"`
 	UpdatedAt          *time.Time `json:"updated_at"`
-}
-
-// Tags are additional short descriptors
-// formatted as a string of comma-separated values
-func (b *Blog) GetTags() []string {
-	return strings.Split(b.Tags, ",")
 }
 
 // BlogsResource is the result from the blogs.json endpoint
