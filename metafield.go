@@ -39,16 +39,16 @@ type MetafieldServiceOp struct {
 
 // Metafield represents a Shopify metafield.
 type Metafield struct {
-	ID            int         `json:"id"`
-	Key           string      `json:"key"`
-	Value         interface{} `json:"value"`
-	ValueType     string      `json:"value_type"`
-	Namespace     string      `json:"namespace"`
-	Description   string      `json:"description"`
-	OwnerId       int         `json:"owner_id"`
-	CreatedAt     *time.Time  `json:"created_at"`
-	UpdatedAt     *time.Time  `json:"updated_at"`
-	OwnerResource string      `json:"owner_resource"`
+	ID            int         `json:"id,omitempty"`
+	Key           string      `json:"key,omitempty"`
+	Value         interface{} `json:"value,omitempty"`
+	ValueType     string      `json:"value_type,omitempty"`
+	Namespace     string      `json:"namespace,omitempty"`
+	Description   string      `json:"description,omitempty"`
+	OwnerId       int         `json:"owner_id,omitempty"`
+	CreatedAt     *time.Time  `json:"created_at,omitempty"`
+	UpdatedAt     *time.Time  `json:"updated_at,omitempty"`
+	OwnerResource string      `json:"owner_resource,omitempty"`
 }
 
 // MetafieldResource represents the result from the metafields/X.json endpoint
