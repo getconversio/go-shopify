@@ -33,27 +33,27 @@ type CustomerServiceOp struct {
 
 // Customer represents a Shopify customer
 type Customer struct {
-	ID                  int                `json:"id"`
-	Email               string             `json:"email"`
-	FirstName           string             `json:"first_name"`
-	LastName            string             `json:"last_name"`
-	State               string             `json:"state"`
-	Note                string             `json:"note"`
-	VerifiedEmail       bool               `json:"verified_email"`
-	MultipassIdentifier string             `json:"multipass_identifier"`
-	OrdersCount         int                `json:"orders_count"`
-	TaxExempt           bool               `json:"tax_exempt"`
-	TotalSpent          *decimal.Decimal   `json:"total_spent"`
-	Phone               string             `json:"phone"`
-	Tags                string             `json:"tags"`
-	LastOrderId         int                `json:"last_order_id"`
-	LastOrderName       string             `json:"last_order_name"`
-	AcceptsMarketing    bool               `json:"accepts_marketing"`
-	DefaultAddress      *CustomerAddress   `json:"default_address"`
-	Addresses           []*CustomerAddress `json:"addresses"`
-	CreatedAt           *time.Time         `json:"created_at"`
-	UpdatedAt           *time.Time         `json:"updated_at"`
-	Metafields          []Metafield        `json:"metafields"`
+	ID                  int                `json:"id,omitempty"`
+	Email               string             `json:"email,omitempty"`
+	FirstName           string             `json:"first_name,omitempty"`
+	LastName            string             `json:"last_name,omitempty"`
+	State               string             `json:"state,omitempty"`
+	Note                string             `json:"note,omitempty"`
+	VerifiedEmail       bool               `json:"verified_email,omitempty"`
+	MultipassIdentifier string             `json:"multipass_identifier,omitempty"`
+	OrdersCount         int                `json:"orders_count,omitempty"`
+	TaxExempt           bool               `json:"tax_exempt,omitempty"`
+	TotalSpent          *decimal.Decimal   `json:"total_spent,omitempty"`
+	Phone               string             `json:"phone,omitempty"`
+	Tags                string             `json:"tags,omitempty"`
+	LastOrderId         int                `json:"last_order_id,omitempty"`
+	LastOrderName       string             `json:"last_order_name,omitempty"`
+	AcceptsMarketing    bool               `json:"accepts_marketing,omitempty"`
+	DefaultAddress      *CustomerAddress   `json:"default_address,omitempty"`
+	Addresses           []*CustomerAddress `json:"addresses,omitempty"`
+	CreatedAt           *time.Time         `json:"created_at,omitempty"`
+	UpdatedAt           *time.Time         `json:"updated_at,omitempty"`
+	Metafields          []Metafield        `json:"metafields,omitempty"`
 }
 
 // Represents the result from the customers/X.json endpoint
