@@ -63,6 +63,7 @@ type Client struct {
 	ScriptTag                  ScriptTagService
 	RecurringApplicationCharge RecurringApplicationChargeService
 	Metafield                  MetafieldService
+	Blog                       BlogService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -184,6 +185,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.ScriptTag = &ScriptTagServiceOp{client: c}
 	c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
 	c.Metafield = &MetafieldServiceOp{client: c}
+	c.Blog = &BlogServiceOp{client: c}
 
 	return c
 }
