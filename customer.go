@@ -20,6 +20,7 @@ type CustomerService interface {
 	Search(interface{}) ([]Customer, error)
 	Create(Customer) (*Customer, error)
 	Update(Customer) (*Customer, error)
+	Delete(int) (error)
 
 	// MetafieldsService used for Customer resource to communicate with Metafields resource
 	MetafieldsService
@@ -113,6 +114,12 @@ func (s *CustomerServiceOp) Update(customer Customer) (*Customer, error) {
 	resource := new(CustomerResource)
 	err := s.client.Put(path, wrappedData, resource)
 	return resource.Customer, err
+}
+
+// Delete an existing customer
+func (s *CustomerServiceOp) Delete(customerID int) error {
+	path := fmt.Sprintf("%s/%d.json", customersBasePath, customerID)
+	return s.client.Delete(path)
 }
 
 // Search customers

@@ -272,6 +272,19 @@ func TestCustomerCreate(t *testing.T) {
 	}
 }
 
+func TestCustomerDelete(t *testing.T) {
+	setup()
+	defer teardown()
+
+	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/customers/1.json",
+		httpmock.NewStringResponder(200, ""))
+
+	err := client.Customer.Delete(1)
+	if err != nil {
+		t.Errorf("Customer.Delete returned error: %v", err)
+	}
+}
+
 func TestCustomerListMetafields(t *testing.T) {
 	setup()
 	defer teardown()
