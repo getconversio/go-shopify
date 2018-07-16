@@ -163,7 +163,8 @@ func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*
 }
 
 // Returns a new Shopify API client with an already authenticated shopname and
-// token.
+// token. The shopName parameter is the shop's myshopify domain,
+// e.g. "theshop.myshopify.com", or simply "theshop"
 func NewClient(app App, shopName, token string) *Client {
 	httpClient := http.DefaultClient
 
