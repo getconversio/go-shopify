@@ -188,7 +188,8 @@ func TestRecurringApplicationChargeServiceOp_Update(t *testing.T) {
 
 	ca := decimal.NewFromFloat(100.00)
 	expected := &RecurringApplicationCharge{ID: 455696195, CappedAmount: &ca}
-	if !reflect.DeepEqual(charge, expected) {
-		t.Errorf("RecurringApplicationCharge.Update returned %+v, expected %+v", charge, expected)
+
+	if charge.CappedAmount.String() != expected.CappedAmount.String() {
+		t.Errorf("RecurringApplicationCharge.Update returned %#v\n, expected %#v", charge, expected)
 	}
 }
