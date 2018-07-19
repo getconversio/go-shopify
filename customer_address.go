@@ -2,8 +2,8 @@ package goshopify
 
 // CustomerAddress represents a Shopify customer address
 type CustomerAddress struct {
-	ID           int    `json:"id"`
-	CustomerID   int    `json:"customer_id"`
+	ID           int    `json:"id,omitempty"`
+	CustomerID   int    `json:"customer_id,omitempty"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
 	Company      string `json:"company"`
