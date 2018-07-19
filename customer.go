@@ -20,7 +20,7 @@ type CustomerService interface {
 	Search(interface{}) ([]Customer, error)
 	Create(Customer) (*Customer, error)
 	Update(Customer) (*Customer, error)
-	Delete(int) (error)
+	Delete(int) error
 
 	// MetafieldsService used for Customer resource to communicate with Metafields resource
 	MetafieldsService
