@@ -234,7 +234,7 @@ func TestDo(t *testing.T) {
 		{
 			"foo/3",
 			httpmock.NewStringResponder(400, `{"errors": {"title": ["wrong"]}}`),
-			ResponseError{Status: 400, Message: "wrong", Errors: []string{"title: wrong"}},
+			ResponseError{Status: 400, Message: "title: wrong", Errors: []string{"title: wrong"}},
 		},
 		{
 			"foo/4",
@@ -495,7 +495,7 @@ func TestCheckResponseError(t *testing.T) {
 		},
 		{
 			httpmock.NewStringResponse(400, `{"errors": { "order": ["order is wrong"] }}`),
-			ResponseError{Status: 400, Message: "order is wrong", Errors: []string{"order: order is wrong"}},
+			ResponseError{Status: 400, Message: "order: order is wrong", Errors: []string{"order: order is wrong"}},
 		},
 		{
 			httpmock.NewStringResponse(400, `{error:bad request}`),

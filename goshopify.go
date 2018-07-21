@@ -284,18 +284,18 @@ func CheckResponseError(r *http.Response) error {
 	//
 	// Unfortunately, "errors" can also be a single string so we have to deal
 	// with that. Lots of reflection :-(
-	kind := reflect.TypeOf(shopifyError.Errors).Kind()
-	if kind == reflect.String {
+	switch reflect.TypeOf(shopifyError.Errors).Kind() {
+	case reflect.String:
 		// Single string, use as message
 		responseError.Message = shopifyError.Errors.(string)
-	} else if kind == reflect.Slice {
+	case reflect.Slice:
 		// An array, parse each entry as a string and join them on the message
 		// json always serializes JSON arrays into []interface{}
 		for _, elem := range shopifyError.Errors.([]interface{}) {
 			responseError.Errors = append(responseError.Errors, fmt.Sprint(elem))
 		}
 		responseError.Message = strings.Join(responseError.Errors, ", ")
-	} else if kind == reflect.Map {
+	case reflect.Map:
 		// A map, parse each error for each key in the map.
 		// json always serializes into map[string]interface{} for objects
 		for k, v := range shopifyError.Errors.(map[string]interface{}) {
@@ -306,7 +306,7 @@ func CheckResponseError(r *http.Response) error {
 					// If the primary message of the response error is not set, use
 					// any message.
 					if responseError.Message == "" {
-						responseError.Message = fmt.Sprint(elem)
+						responseError.Message = fmt.Sprintf("%v: %v", k, elem)
 					}
 					topicAndElem := fmt.Sprintf("%v: %v", k, elem)
 					responseError.Errors = append(responseError.Errors, topicAndElem)
