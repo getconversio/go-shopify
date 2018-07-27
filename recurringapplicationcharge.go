@@ -73,11 +73,11 @@ func parse(dest **time.Time, data *string) error {
 }
 
 func (r *RecurringApplicationCharge) UnmarshalJSON(data []byte) error {
-	// This is a workaround for an API returning incomplete result:
+	// This is a workaround for the API returning incomplete results:
 	// https://ecommerce.shopify.com/c/shopify-apis-and-technology/t/-523203
-	// For longer explanation of a hack, please check:
+	// For a longer explanation of the hack check:
 	// http://choly.ca/post/go-json-marshalling/
-	type Alias RecurringApplicationCharge
+	type alias RecurringApplicationCharge
 	aux := &struct {
 		ActivatedOn *string `json:"activated_on"`
 		BillingOn   *string `json:"billing_on"`
@@ -85,8 +85,8 @@ func (r *RecurringApplicationCharge) UnmarshalJSON(data []byte) error {
 		CreatedAt   *string `json:"created_at"`
 		TrialEndsOn *string `json:"trial_ends_on"`
 		UpdatedAt   *string `json:"updated_at"`
-		*Alias
-	}{Alias: (*Alias)(r)}
+		*alias
+	}{alias: (*alias)(r)}
 
 	if err := json.Unmarshal(data, &aux); err != nil {
 		return err
