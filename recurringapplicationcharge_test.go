@@ -283,7 +283,7 @@ func TestRecurringApplicationChargeServiceOp_Update(t *testing.T) {
 		),
 	)
 
-	charge, err := client.RecurringApplicationCharge.Update(455696195, 100.00)
+	charge, err := client.RecurringApplicationCharge.Update(455696195, 100)
 	if err != nil {
 		t.Errorf("RecurringApplicationCharge.Update returned an error: %v", err)
 	}
