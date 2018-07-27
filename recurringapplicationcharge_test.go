@@ -57,7 +57,7 @@ func recurringApplicationChargeTests(t *testing.T, charge RecurringApplicationCh
 }
 
 // recurringApplicationChargeTestsIncompleteResults tests if fields are properly
-// parsed focusing on testing *time.Time fields, which in principle (see #71),
+// parsed focusing on testing *time.Time fields, which in principle (see #91),
 // may not be parsed properly.
 func recurringApplicationChargeTestsAllFieldsAffected(t *testing.T,
 	charge RecurringApplicationCharge) {
@@ -283,14 +283,14 @@ func TestRecurringApplicationChargeServiceOp_Update(t *testing.T) {
 		),
 	)
 
-	charge, err := client.RecurringApplicationCharge.Update(455696195, 100)
+	charge, err := client.RecurringApplicationCharge.Update(455696195, 100.00)
 	if err != nil {
 		t.Errorf("RecurringApplicationCharge.Update returned an error: %v", err)
 	}
 
 	ca := decimal.NewFromFloat(100.00)
 	expected := &RecurringApplicationCharge{ID: 455696195, CappedAmount: &ca}
-	if !reflect.DeepEqual(charge, expected) {
+	if expected.CappedAmount.String() != charge.CappedAmount.String() {
 		t.Errorf("RecurringApplicationCharge.Update returned %+v, expected %+v", charge, expected)
 	}
 }
