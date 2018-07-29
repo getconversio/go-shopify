@@ -64,6 +64,7 @@ type Client struct {
 	RecurringApplicationCharge RecurringApplicationChargeService
 	Metafield                  MetafieldService
 	Blog                       BlogService
+	ApplicationCharge          ApplicationChargeService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -187,6 +188,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.RecurringApplicationCharge = &RecurringApplicationChargeServiceOp{client: c}
 	c.Metafield = &MetafieldServiceOp{client: c}
 	c.Blog = &BlogServiceOp{client: c}
+	c.ApplicationCharge = &ApplicationChargeServiceOp{client: c}
 
 	return c
 }
