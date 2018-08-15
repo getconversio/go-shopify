@@ -39,16 +39,16 @@ type MetafieldServiceOp struct {
 
 // Metafield represents a Shopify metafield.
 type Metafield struct {
-	ID            int         `json:"id,omitempty"`
-	Key           string      `json:"key,omitempty"`
-	Value         interface{} `json:"value,omitempty"`
-	ValueType     string      `json:"value_type,omitempty"`
-	Namespace     string      `json:"namespace,omitempty"`
-	Description   string      `json:"description,omitempty"`
-	OwnerId       int         `json:"owner_id,omitempty"`
+	ID            *int        `json:"id,omitempty"`
+	Key           string      `json:"key"`
+	Value         interface{} `json:"value"`
+	ValueType     string      `json:"value_type"`
+	Namespace     string      `json:"namespace"`
+	Description   *string     `json:"description,omitempty"`
+	OwnerId       *int        `json:"owner_id,omitempty"`
 	CreatedAt     *time.Time  `json:"created_at,omitempty"`
 	UpdatedAt     *time.Time  `json:"updated_at,omitempty"`
-	OwnerResource string      `json:"owner_resource,omitempty"`
+	OwnerResource *string     `json:"owner_resource,omitempty"`
 }
 
 // MetafieldResource represents the result from the metafields/X.json endpoint
@@ -99,7 +99,7 @@ func (s *MetafieldServiceOp) Create(metafield Metafield) (*Metafield, error) {
 // Update an existing metafield
 func (s *MetafieldServiceOp) Update(metafield Metafield) (*Metafield, error) {
 	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
-	path := fmt.Sprintf("%s/%d.json", prefix, metafield.ID)
+	path := fmt.Sprintf("%s/%d.json", prefix, *metafield.ID)
 	wrappedData := MetafieldResource{Metafield: &metafield}
 	resource := new(MetafieldResource)
 	err := s.client.Put(path, wrappedData, resource)
