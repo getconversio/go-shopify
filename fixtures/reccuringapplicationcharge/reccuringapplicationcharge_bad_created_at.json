@@ -1,0 +1,20 @@
+{
+  "recurring_application_charge": {
+    "id": 1029266948,
+    "name": "Super Duper Plan",
+    "api_client_id": 755357713,
+    "price": "10.00",
+    "status": "pending",
+    "return_url": "http://super-duper.shopifyapps.com/",
+    "billing_on": null,
+    "created_at": "ptk 27 lip 14:24:13 2018 CEST",
+    "updated_at": null,
+    "test": null,
+    "activated_on": null,
+    "trial_ends_on": null,
+    "cancelled_on": null,
+    "trial_days": 0,
+    "decorated_return_url": "http://super-duper.shopifyapps.com/?charge_id=1029266948",
+    "confirmation_url": "https://apple.myshopify.com/admin/charges/1029266948/confirm_recurring_application_charge?signature=BAhpBAReWT0%3D--b51a6db06a3792c4439783fcf0f2e89bf1c9df68"
+  }
+}
