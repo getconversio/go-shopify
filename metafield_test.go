@@ -11,8 +11,8 @@ import (
 func MetafieldTests(t *testing.T, metafield Metafield) {
 	// Check that ID is assigned to the returned metafield
 	expectedInt := 721389482
-	if metafield.ID != expectedInt {
-		t.Errorf("Metafield.ID returned %+v, expected %+v", metafield.ID, expectedInt)
+	if *metafield.ID != expectedInt {
+		t.Errorf("Metafield.ID returned %+v, expected %+v", *metafield.ID, expectedInt)
 	}
 }
 
@@ -28,7 +28,9 @@ func TestMetafieldList(t *testing.T) {
 		t.Errorf("Metafield.List returned error: %v", err)
 	}
 
-	expected := []Metafield{{ID: 1}, {ID: 2}}
+	id1 := 1
+	id2 := 2
+	expected := []Metafield{{ID: &id1}, {ID: &id2}}
 	if !reflect.DeepEqual(metafields, expected) {
 		t.Errorf("Metafield.List returned %+v, expected %+v", metafields, expected)
 	}
@@ -78,7 +80,8 @@ func TestMetafieldGet(t *testing.T) {
 		t.Errorf("Metafield.Get returned error: %v", err)
 	}
 
-	expected := &Metafield{ID: 1}
+	id := 1
+	expected := &Metafield{ID: &id}
 	if !reflect.DeepEqual(metafield, expected) {
 		t.Errorf("Metafield.Get returned %+v, expected %+v", metafield, expected)
 	}
@@ -113,8 +116,9 @@ func TestMetafieldUpdate(t *testing.T) {
 	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/metafields/1.json",
 		httpmock.NewBytesResponder(200, loadFixture("metafield.json")))
 
+	id := 1
 	metafield := Metafield{
-		ID:        1,
+		ID:        &id,
 		Value:     "something new",
 		ValueType: "string",
 	}
