@@ -1,0 +1,7 @@
+{
+  "redirect": {
+    "id": 1,
+    "path": "/from",
+    "target": "/to"
+  }
+}
