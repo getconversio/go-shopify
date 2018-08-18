@@ -1,0 +1,10 @@
+{
+  "page": {
+    "id": 1,
+    "author": "Unknown",
+    "body_html": "<strong>NOT FOUND<\/strong>",
+    "handle": "404",
+    "template_suffix": "notfound",
+    "title": "404"
+  }
+}
