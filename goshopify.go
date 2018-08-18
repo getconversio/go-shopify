@@ -65,6 +65,7 @@ type Client struct {
 	Metafield                  MetafieldService
 	Blog                       BlogService
 	ApplicationCharge          ApplicationChargeService
+	Page                       PageService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -189,6 +190,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Metafield = &MetafieldServiceOp{client: c}
 	c.Blog = &BlogServiceOp{client: c}
 	c.ApplicationCharge = &ApplicationChargeServiceOp{client: c}
+	c.Page = &PageServiceOp{client: c}
 
 	return c
 }
