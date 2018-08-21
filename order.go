@@ -21,6 +21,9 @@ type OrderService interface {
 
 	// MetafieldsService used for Order resource to communicate with Metafields resource
 	MetafieldsService
+
+	// FulfillmentsService used for Order resource to communicate with Fulfillments resource
+	FulfillmentsService
 }
 
 // OrderServiceOp handles communication with the order related methods of the
@@ -251,28 +254,6 @@ type Transaction struct {
 	PaymentDetails *PaymentDetails  `json:"payment_details,omitempty"`
 }
 
-type Fulfillment struct {
-	ID              int        `json:"id,omitempty"`
-	OrderID         int        `json:"order_id,omitempty"`
-	Status          string     `json:"status,omitempty"`
-	CreatedAt       *time.Time `json:"created_at,omitempty"`
-	Service         string     `json:"service,omitempty"`
-	UpdatedAt       *time.Time `json:"updated_at,omitempty"`
-	TrackingCompany string     `json:"tracking_company,omitempty"`
-	ShipmentStatus  string     `json:"shipment_status,omitempty"`
-	TrackingNumber  string     `json:"tracking_number,omitempty"`
-	TrackingNumbers []string   `json:"tracking_numbers,omitempty"`
-	TrackingUrl     string     `json:"tracking_url,omitempty"`
-	TrackingUrls    []string   `json:"tracking_urls,omitempty"`
-	Receipt         Receipt    `json:"receipt,omitempty"`
-	LineItems       []LineItem `json:"line_items,omitempty"`
-}
-
-type Receipt struct {
-	TestCase      bool   `json:"testcase,omitempty"`
-	Authorization string `json:"authorization,omitempty"`
-}
-
 type ClientDetails struct {
 	AcceptLanguage string `json:"accept_language,omitempty"`
 	BrowserHeight  int    `json:"browser_height,omitempty"`
@@ -361,8 +342,56 @@ func (s *OrderServiceOp) UpdateMetafield(orderID int, metafield Metafield) (*Met
 	return metafieldService.Update(metafield)
 }
 
-// // Delete an existing metafield for an order
+// Delete an existing metafield for an order
 func (s *OrderServiceOp) DeleteMetafield(orderID int, metafieldID int) error {
 	metafieldService := &MetafieldServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
 	return metafieldService.Delete(metafieldID)
+}
+
+// List fulfillments for an order
+func (s *OrderServiceOp) ListFulfillments(orderID int, options interface{}) ([]Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.List(options)
+}
+
+// Count fulfillments for an order
+func (s *OrderServiceOp) CountFulfillments(orderID int, options interface{}) (int, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Count(options)
+}
+
+// Get individual fulfillment for an order
+func (s *OrderServiceOp) GetFulfillment(orderID int, fulfillmentID int, options interface{}) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Get(fulfillmentID, options)
+}
+
+// Create a new fulfillment for an order
+func (s *OrderServiceOp) CreateFulfillment(orderID int, fulfillment Fulfillment) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Create(fulfillment)
+}
+
+// Update an existing fulfillment for an order
+func (s *OrderServiceOp) UpdateFulfillment(orderID int, fulfillment Fulfillment) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Update(fulfillment)
+}
+
+// Complete an existing fulfillment for an order
+func (s *OrderServiceOp) CompleteFulfillment(orderID int, fulfillmentID int) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Complete(fulfillmentID)
+}
+
+// Transition an existing fulfillment for an order
+func (s *OrderServiceOp) TransitionFulfillment(orderID int, fulfillmentID int) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Transition(fulfillmentID)
+}
+
+// Cancel an existing fulfillment for an order
+func (s *OrderServiceOp) CancelFulfillment(orderID int, fulfillmentID int) (*Fulfillment, error) {
+	fulfillmentService := &FulfillmentServiceOp{client: s.client, resource: ordersResourceName, resourceID: orderID}
+	return fulfillmentService.Cancel(fulfillmentID)
 }
