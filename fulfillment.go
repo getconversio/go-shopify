@@ -125,7 +125,7 @@ func (s *FulfillmentServiceOp) Update(fulfillment Fulfillment) (*Fulfillment, er
 // Complete an existing fulfillment
 func (s *FulfillmentServiceOp) Complete(fulfillmentID int) (*Fulfillment, error) {
 	prefix := FulfillmentPathPrefix(s.resource, s.resourceID)
-	path := fmt.Sprintf("%s/%d.json", prefix, fulfillmentID)
+	path := fmt.Sprintf("%s/%d/complete.json", prefix, fulfillmentID)
 	resource := new(FulfillmentResource)
 	err := s.client.Post(path, nil, resource)
 	return resource.Fulfillment, err
@@ -134,7 +134,7 @@ func (s *FulfillmentServiceOp) Complete(fulfillmentID int) (*Fulfillment, error)
 // Transition an existing fulfillment
 func (s *FulfillmentServiceOp) Transition(fulfillmentID int) (*Fulfillment, error) {
 	prefix := FulfillmentPathPrefix(s.resource, s.resourceID)
-	path := fmt.Sprintf("%s/%d.json", prefix, fulfillmentID)
+	path := fmt.Sprintf("%s/%d/open.json", prefix, fulfillmentID)
 	resource := new(FulfillmentResource)
 	err := s.client.Post(path, nil, resource)
 	return resource.Fulfillment, err
@@ -143,7 +143,7 @@ func (s *FulfillmentServiceOp) Transition(fulfillmentID int) (*Fulfillment, erro
 // Cancel an existing fulfillment
 func (s *FulfillmentServiceOp) Cancel(fulfillmentID int) (*Fulfillment, error) {
 	prefix := FulfillmentPathPrefix(s.resource, s.resourceID)
-	path := fmt.Sprintf("%s/%d.json", prefix, fulfillmentID)
+	path := fmt.Sprintf("%s/%d/cancel.json", prefix, fulfillmentID)
 	resource := new(FulfillmentResource)
 	err := s.client.Post(path, nil, resource)
 	return resource.Fulfillment, err

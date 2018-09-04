@@ -465,7 +465,7 @@ func TestOrderCompleteFulfillment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2.json",
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2/complete.json",
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment.json")))
 
 	returnedFulfillment, err := client.Order.CompleteFulfillment(1, 2)
@@ -480,7 +480,7 @@ func TestOrderTransitionFulfillment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2.json",
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2/open.json",
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment.json")))
 
 	returnedFulfillment, err := client.Order.TransitionFulfillment(1, 2)
@@ -495,7 +495,7 @@ func TestOrderCancelFulfillment(t *testing.T) {
 	setup()
 	defer teardown()
 
-	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2.json",
+	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/orders/1/fulfillments/2/cancel.json",
 		httpmock.NewBytesResponder(200, loadFixture("fulfillment.json")))
 
 	returnedFulfillment, err := client.Order.CancelFulfillment(1, 2)
