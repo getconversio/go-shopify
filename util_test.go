@@ -80,3 +80,21 @@ func TestMetafieldPathPrefix(t *testing.T) {
 		}
 	}
 }
+
+func TestFulfillmentPathPrefix(t *testing.T) {
+	cases := []struct {
+		resource   string
+		resourceID int
+		expected   string
+	}{
+		{"", 0, "admin/fulfillments"},
+		{"orders", 123, "admin/orders/123/fulfillments"},
+	}
+
+	for _, c := range cases {
+		actual := FulfillmentPathPrefix(c.resource, c.resourceID)
+		if actual != c.expected {
+			t.Errorf("FulfillmentPathPrefix(%s, %d): expected %s, actual %s", c.resource, c.resourceID, c.expected, actual)
+		}
+	}
+}

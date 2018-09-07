@@ -39,3 +39,14 @@ func MetafieldPathPrefix(resource string, resourceID int) string {
 	}
 	return prefix
 }
+
+// Return the prefix for a fulfillment path
+func FulfillmentPathPrefix(resource string, resourceID int) string {
+	var prefix string
+	if resource == "" {
+		prefix = fmt.Sprintf("admin/fulfillments")
+	} else {
+		prefix = fmt.Sprintf("admin/%s/%d/fulfillments", resource, resourceID)
+	}
+	return prefix
+}
