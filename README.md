@@ -1,3 +1,5 @@
+# DEPRECATION NOTICE
+Continuing support for the go-shopify library will be at Bold Commerce's fork over [here](https://github.com/bold-commerce/go-shopify). Please open issues and pull requests over there.
 # go-shopify
 
 Another Shopify Api Library in Go.
